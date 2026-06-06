@@ -5,238 +5,280 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SEMR 전자의무기록 시스템</title>
   <style>
-    body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #f0f9ff; color: #1e293b; overflow-x: hidden; }
-    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e3a8a; color: #fff; padding: 12px 24px; border-radius: 8px; display: none; z-index: 10000; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-left: 4px solid #fde047; }
+    /* 애플 스타일 미니멀 기본 서체 및 배경 설정 */
+    body { 
+      margin: 0; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+      background: #F5F5F7; 
+      color: #1D1D1F; 
+      overflow-x: hidden; 
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* 깔끔한 알림 팝업 디자인 */
+    #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(29, 29, 31, 0.9); backdrop-filter: blur(10px); color: #fff; padding: 14px 28px; border-radius: 20px; display: none; z-index: 10000; font-size: 14px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
     #toast.show { display: block; }
     
-    /* 스크롤바 디자인 */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #f0f9ff; }
-    ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
+    /* 스크롤바 정밀 커스텀 */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #C1C1C7; border-radius: 10px; }
     
-    /* 로켓 처방 버튼 */
-    .rocket-btn { transition: all 0.2s; border: 1px solid #bae6fd; background: #ffffff; color: #1e3a8a; }
-    .rocket-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: #38bdf8 !important; color: #ffffff !important; border-color: #38bdf8; }
+    /* 애플 감성 컴포넌트 공통 스타일 */
+    .apple-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      padding: 24px;
+      box-sizing: border-box;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    /* 로켓 처방 에디터 반영 버튼 호버 효과 */
+    .rocket-btn { 
+      transition: all 0.2s ease; 
+      border: 1px solid #E5E5EA; 
+      background: #F5F5F7; 
+      color: #1D1D1F; 
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .rocket-btn:hover { 
+      transform: translateY(-1px); 
+      background: #768CF7 !important; 
+      color: #FFFFFF !important; 
+      border-color: #768CF7;
+      box-shadow: 0 4px 12px rgba(118, 140, 247, 0.25);
+    }
 
-    /* 환자 검색 리스트 아이템 */
-    .patient-item { padding: 12px; border-bottom: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
-    .patient-item:hover { background: #e0f2fe; }
-    .patient-item.active { background: #bae6fd; border-left: 4px solid #1e3a8a; font-weight: bold; }
+    /* 환자 검색 리스트 스타일 */
+    .patient-item { 
+      padding: 14px 16px; 
+      border-bottom: 1px solid #F5F5F7; 
+      cursor: pointer; 
+      transition: 0.2s ease; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    .patient-item:hover { background: #F5F5F7; border-radius: 8px; }
+    .patient-item.active { 
+      background: #F2F4FF; 
+      border-left: 4px solid #768CF7; 
+      font-weight: bold; 
+      border-radius: 0 8px 8px 0;
+    }
 
-    /* --- [우측 슬라이드 햄버거 메뉴 및 내부 섹션] --- */
-    .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 10004; display: none; backdrop-filter: blur(2px); }
+    /* --- [우측 슬라이드 제어판 드로어 - 모바일 적응형화] --- */
+    .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2); z-index: 10004; display: none; backdrop-filter: blur(8px); }
     .drawer-overlay.show { display: block; }
     
-    .nav-drawer { position: fixed; top: 0; right: -340px; width: 340px; height: 100%; background: #1e3a8a; box-shadow: -4px 0 20px rgba(0,0,0,0.2); z-index: 10005; transition: right 0.3s ease; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; border-left: 4px solid #38bdf8; overflow-y: auto; }
-    .nav-drawer.open { right: 0; }
+    .nav-drawer { position: fixed; top: 0; right: 0; width: 360px; max-width: 85%; height: 100%; background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(20px); box-shadow: -10px 0 40px rgba(0,0,0,0.05); z-index: 10005; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; border-left: 1px solid rgba(0,0,0,0.05); overflow-y: auto; }
+    .nav-drawer.open { transform: translateX(0); }
     
-    .drawer-section { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px; padding: 14px; box-sizing: border-box; }
-    .drawer-section h4 { margin: 0 0 10px 0; color: #38bdf8; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .drawer-section { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.06); border-radius: 14px; padding: 16px; box-sizing: border-box; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .drawer-section h4 { margin: 0 0 12px 0; color: #1D1D1F; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #F5F5F7; padding-bottom: 8px; }
     
-    .mode-btn-group { display: flex; flex-direction: column; gap: 6px; }
-    .drawer-btn { width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; text-align: center; box-sizing: border-box; border: none; }
-    .drawer-btn.mode-btn { background: #0284C7; color: white; border: 1px solid #38BDF8; text-align: left; padding-left: 14px; }
-    .drawer-btn.mode-btn.active { background: #38bdf8; color: #1e3a8a; border-color: #fff; }
+    .drawer-btn { width: 100%; padding: 11px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s; text-align: center; box-sizing: border-box; border: none; }
+    .drawer-input { width: 100%; padding: 8px 12px; border: 1px solid #D2D2D7; border-radius: 8px; box-sizing: border-box; font-size: 13px; background: #fff; margin-bottom: 8px; color: #1D1D1F; outline: none; transition: border 0.2s; }
+    .drawer-input:focus { border-color: #768CF7; }
+    .drawer-label { display: block; font-size: 11px; font-weight: 600; color: #86868B; margin-bottom: 4px; }
 
-    .drawer-input { width: 100%; padding: 8px 10px; border: 1px solid #38BDF8; border-radius: 6px; box-sizing: border-box; font-size: 13px; background: #fff; margin-bottom: 8px; color: #1e293b; }
-    .drawer-label { display: block; font-size: 11px; font-weight: 700; color: #bae6fd; margin-bottom: 4px; }
-
-    /* --- [화면 해상도 모드 3단 정의] --- */
-    #main-system { margin: 0 auto; padding: 20px; transition: all 0.3s ease; box-sizing: border-box; }
-    .layout-grid { display: grid; gap: 20px; align-items: start; grid-template-columns: 1fr; }
+    /* --- [완전 자동 적응형 레이아웃 구조 설계] --- */
+    #main-system { margin: 0 auto; padding: 30px 20px; transition: all 0.3s ease; box-sizing: border-box; width: 100%; max-width: 1240px; }
     
-    body.view-pad-portrait #main-system { max-width: 820px; }
-    body.view-pad-landscape #main-system { max-width: 1180px; }
-    body.view-phone #main-system { max-width: 450px; }
+    /* 기본 상태 (모바일 및 패드 세로): 1열 수직 배열 */
+    .layout-grid { display: grid; gap: 24px; align-items: start; grid-template-columns: 1fr; }
+    
+    /* 적응형 미디어 쿼리: 데스크톱 및 패드 가로 모드 해상도 진입 시 자동 변환 (스마일보건 사이트형) */
+    @media (min-width: 992px) {
+      .layout-grid { grid-template-columns: 340px 1fr; }
+    }
   </style>
 </head>
-<body class="view-pad-portrait"> <!-- 기본값: 아이패드 세로 -->
+<body>
 
-  <!-- 로그인 오버레이 스크린 -->
-  <div id="login-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #1E3A8A 0%, #0284C7 100%); z-index:9999; display:flex; justify-content:center; align-items:center; padding: 20px; box-sizing: border-box;">
-    <div style="background:#ffffff; padding:40px; border-radius:20px; box-shadow:0 20px 40px rgba(0,0,0,0.3); width:100%; max-width:420px; text-align:center;">
-      <h2 style="color:#1E3A8A; margin: 0 0 5px 0; font-weight:800; font-size: 28px; letter-spacing: 1px;">🏥 SEMR Pro</h2>
-      <p style="color:#0284C7; font-size:14px; margin-bottom:30px; font-weight: 700;">스마트 전자의무기록 시스템</p>
+  <!-- 로그인 스크란 오버레이 -->
+  <div id="login-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background: #F5F5F7; z-index:9999; display:flex; justify-content:center; align-items:center; padding: 20px; box-sizing: border-box;">
+    <div style="background:#ffffff; padding:44px 40px; border-radius:24px; box-shadow:0 20px 50px rgba(0,0,0,0.06); width:100%; max-width:400px; text-align:center; border: 1px solid rgba(0,0,0,0.03);">
+      <h2 style="color:#1D1D1F; margin: 0 0 6px 0; font-weight:700; font-size: 26px; letter-spacing: -0.5px;">🏥 SEMR Workspace</h2>
+      <p style="color:#86868B; font-size:14px; margin-bottom:34px; font-weight: 400;">스마트 의무기록 관리 포털</p>
       
       <div id="login-section">
-        <div style="text-align:left; margin-bottom:15px;">
-          <label style="font-size:13px; color:#1E3A8A; font-weight:700; display:block; margin-bottom:6px;">이메일 주소</label>
-          <input type="email" id="login-email" placeholder="user@domain.com" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
+        <div style="text-align:left; margin-bottom:16px;">
+          <input type="email" id="login-email" placeholder="이메일 주소" style="width:100%; padding:14px; border:1px solid #D2D2D7; border-radius:12px; box-sizing:border-box; font-size:15px; background: #F5F5F7; outline:none;">
         </div>
-        <div style="text-align:left; margin-bottom:20px;">
-          <label style="font-size:13px; color:#1E3A8A; font-weight:700; display:block; margin-bottom:6px;">비밀번호</label>
-          <input type="password" id="login-pwd" placeholder="••••••••" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
+        <div style="text-align:left; margin-bottom:24px;">
+          <input type="password" id="login-pwd" placeholder="비밀번호" style="width:100%; padding:14px; border:1px solid #D2D2D7; border-radius:12px; box-sizing:border-box; font-size:15px; background: #F5F5F7; outline:none;">
         </div>
-        <button id="btn-login" style="width:100%; padding:14px; background:#1E3A8A; color:white; border:none; border-radius:8px; font-weight:700; font-size:16px; cursor:pointer; margin-bottom:15px; transition: 0.2s; box-shadow: 0 4px 6px rgba(30,58,138,0.2);">시스템 접속 (로그인)</button>
-        <button id="btn-google-login" style="width:100%; padding:12px; background:#ffffff; color:#4285F4; border:1px solid #ea4335; border-radius:8px; font-weight:600; font-size:14px; cursor:pointer; margin-bottom:20px; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); transition: 0.2s;">
-          <svg width="18" height="18" viewBox="0 0 16 16">
-            <path fill="#4285F4" d="M15.68 8.18c0-.57-.05-1.12-.15-1.64H8v3.09h4.31c-.19 1.02-.76 1.88-1.62 2.46v2.05h2.63c1.54-1.42 2.42-3.51 2.42-5.96z"/>
-            <path fill="#34A853" d="M8 16c2.16 0 3.97-.72 5.3-1.94l-2.63-2.05c-.73.49-1.66.78-2.67.78-2.06 0-3.8-1.39-4.42-3.26H.95v2.12C2.27 14.19 4.93 16 8 16z"/>
-            <path fill="#FBBC05" d="M3.58 9.53a4.8 4.8 0 0 1 0-3.06V4.35H.95a7.99 7.99 0 0 0 0 7.3l2.63-2.12z"/>
-            <path fill="#EA4335" d="M8 3.19c1.17 0 2.23.4 3.06 1.19l2.3-2.3A7.94 7.94 0 0 0 8 0C4.93 0 2.27 1.81.95 4.35l2.63 2.12c.62-1.87 2.36-3.26 4.42-3.26z"/>
-          </svg>
-          Google 로그인
+        <button id="btn-login" style="width:100%; padding:14px; background:#768CF7; color:white; border:none; border-radius:12px; font-weight:600; font-size:16px; cursor:pointer; margin-bottom:14px; transition: 0.2s;">로그인</button>
+        <button id="btn-google-login" style="width:100%; padding:12px; background:#ffffff; color:#1D1D1F; border:1px solid #D2D2D7; border-radius:12px; font-weight:600; font-size:14px; cursor:pointer; margin-bottom:24px; display:flex; align-items:center; justify-content:center; gap:10px; transition: 0.2s;">
+          Google 계정으로 인증
         </button>
-        <p style="color:#64748b; font-size:13px; margin:0;">아직 계정이 없으신가요? <a href="#" id="link-goto-signup" style="color:#38BDF8; font-weight:700; text-decoration:none;">새 계정 등록</a></p>
+        <p style="color:#86868B; font-size:13px; margin:0;">새로운 워크스페이스 공간이 필요하신가요? <a href="#" id="link-goto-signup" style="color:#768CF7; font-weight:600; text-decoration:none;">계정 생성</a></p>
       </div>
 
       <div id="signup-section" style="display: none;">
-        <div style="text-align:left; margin-bottom:15px;">
-          <label style="font-size:13px; color:#1E3A8A; font-weight:700; display:block; margin-bottom:6px;">새 이메일 주소</label>
-          <input type="email" id="signup-email" placeholder="new-user@domain.com" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
+        <div style="text-align:left; margin-bottom:16px;">
+          <input type="email" id="signup-email" placeholder="새 이메일 주소" style="width:100%; padding:14px; border:1px solid #D2D2D7; border-radius:12px; box-sizing:border-box; font-size:15px; background: #F5F5F7; outline:none;">
         </div>
-        <div style="text-align:left; margin-bottom:20px;">
-          <label style="font-size:13px; color:#1E3A8A; font-weight:700; display:block; margin-bottom:6px;">비밀번호 설정 (6자리 이상)</label>
-          <input type="password" id="signup-pwd" placeholder="••••••••" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
+        <div style="text-align:left; margin-bottom:24px;">
+          <input type="password" id="signup-pwd" placeholder="비밀번호 설정 (6자 이상)" style="width:100%; padding:14px; border:1px solid #D2D2D7; border-radius:12px; box-sizing:border-box; font-size:15px; background: #F5F5F7; outline:none;">
         </div>
-        <button id="btn-signup" style="width:100%; padding:14px; background:#38BDF8; color:white; border:none; border-radius:8px; font-weight:700; font-size:16px; cursor:pointer; margin-bottom:20px; transition: 0.2s; box-shadow: 0 4px 6px rgba(56,189,248,0.2);">새 계정 생성하기</button>
-        <p style="color:#64748b; font-size:13px; margin:0;">이미 계정이 있으신가요? <a href="#" id="link-goto-login" style="color:#1E3A8A; font-weight:700; text-decoration:none;">로그인으로 돌아가기</a></p>
+        <button id="btn-signup" style="width:100%; padding:14px; background:#768CF7; color:white; border:none; border-radius:12px; font-weight:600; font-size:16px; cursor:pointer; margin-bottom:20px; transition: 0.2s;">마스터 계정 생성</button>
+        <p style="color:#86868B; font-size:13px; margin:0;">기존 계정으로 로그인하려면? <a href="#" id="link-goto-login" style="color:#768CF7; font-weight:600; text-decoration:none;">돌아가기</a></p>
       </div>
-      <p id="login-error" style="color:#EF4444; font-size:13px; margin-top:15px; display:none; font-weight: 600;"></p>
+      <p id="login-error" style="color:#FF453A; font-size:13px; margin-top:15px; display:none; font-weight: 500;"></p>
     </div>
   </div>
 
 
-  <!-- 햄버거 종합 메뉴 드로어 개편 -->
+  <!-- 햄버거 메뉴 서랍 (통합 기능 제어 센터) -->
   <div id="drawer-overlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
   <div id="nav-drawer" class="nav-drawer">
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
-      <span style="color: white; font-weight: 800; font-size: 16px; letter-spacing: 0.5px;">⚙️ SEMR 마스터 제어판</span>
-      <button onclick="toggleDrawer()" style="background: none; border: none; color: #38bdf8; font-size: 26px; cursor: pointer; font-weight: bold; line-height: 1;">&times;</button>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E5E5EA; padding-bottom: 12px;">
+      <span style="color: #1D1D1F; font-weight: 700; font-size: 16px;">⚙️ SEMR 통합 설정</span>
+      <button onclick="toggleDrawer()" style="background: none; border: none; color: #86868B; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
     </div>
     
-    <!-- 1. 계정 항목 섹션 -->
+    <!-- 1. 계정 정보 섹션 -->
     <div class="drawer-section">
-      <h4>👤 계정 정보</h4>
-      <div id="user-display-name" style="color: #fff; font-size:12px; background: rgba(0,0,0,0.2); padding:10px; border-radius:6px; font-weight: bold; border: 1px solid rgba(56,189,248,0.3); text-align: center; margin-bottom: 8px; word-break: break-all;">
-        인증 대기중...
+      <h4>👤 계정 관리</h4>
+      <div id="user-display-name" style="color: #1D1D1F; font-size:12px; background: #F5F5F7; padding:10px; border-radius:8px; font-weight: 600; text-align: center; margin-bottom: 10px; word-break: break-all;">
+        조회 중...
       </div>
-      <button onclick="handleLogout()" class="drawer-btn" style="background: #EF4444; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">시스템 로그아웃</button>
+      <button onclick="handleLogout()" class="drawer-btn" style="background: #FF453A; color: white;">로그아웃</button>
     </div>
 
-    <!-- 2. 화면 해상도 모드 제어 섹션 -->
+    <!-- 2. 로켓 처방 매크로 수정 에디터 관리 섹션 -->
     <div class="drawer-section">
-      <h4>🖥️ 화면 모드 설정</h4>
-      <div class="mode-btn-group">
-        <button id="btn-mode-pad-landscape" onclick="changeViewMode('pad-landscape')" class="drawer-btn mode-btn">💻 패드 가로 모드 (1180px)</button>
-        <button id="btn-mode-pad-portrait" onclick="changeViewMode('pad-portrait')" class="drawer-btn mode-btn active">📋 패드 세로 모드 (820px)</button>
-        <button id="btn-mode-phone" onclick="changeViewMode('phone')" class="drawer-btn mode-btn">📱 휴대폰 세로 모드 (450px)</button>
+      <h4>🚀 로켓 처방 매크로 관리</h4>
+      <p style="font-size:11px; color:#86868B; margin:0 0 12px 0; line-height:1.4;">자주 쓰는 상병 세트 4개를 기호에 맞춰 커스텀 수정하세요.</p>
+      
+      <div id="preset-editor-container" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- JS에서 동적으로 입력 폼 4개 자동 생성 -->
       </div>
+      <button onclick="savePresetSettings()" style="background: #768CF7; color: white; margin-top: 10px; font-weight:700;" class="drawer-btn">🔒 매크로 구성표 저장/변경</button>
     </div>
     
     <!-- 3. 신규 환자 등록 섹션 -->
     <div class="drawer-section">
-      <h4>👥 신규 환자 마스터 등록</h4>
+      <h4>👥 신규 환자 등록</h4>
       <div>
-        <label class="drawer-label">등록 번호</label>
-        <input type="text" id="p-reg-id" placeholder="예: 10523" class="drawer-input">
+        <label class="drawer-label">등록/학번 번호</label>
+        <input type="text" id="p-reg-id" placeholder="예: 2026001" class="drawer-input">
       </div>
       <div>
-        <label class="drawer-label">성명 <span style="color:#EF4444;">*</span></label>
-        <input type="text" id="p-reg-name" placeholder="이름 (필수)" class="drawer-input">
+        <label class="drawer-label">환자 성명 *</label>
+        <input type="text" id="p-reg-name" placeholder="필수 기입" class="drawer-input">
       </div>
       <div>
-        <label class="drawer-label">⚠️ 특이사항 및 만성질환</label>
-        <textarea id="p-reg-significant" placeholder="예: 페니실린 알레르기" class="drawer-input" style="height: 60px; resize: none; font-family: inherit;"></textarea>
+        <label class="drawer-label">⚠️ 주의 및 특이사항</label>
+        <textarea id="p-reg-significant" placeholder="예: 알레르기 유무, 기왕력 기록" class="drawer-input" style="height: 50px; resize: none; font-family: inherit;"></textarea>
       </div>
-      <button onclick="registerPatientMaster()" style="background: #38bdf8; color: #1e3a8a; font-weight: 800;" class="drawer-btn">환자 신규 데이터 생성</button>
+      <button onclick="registerPatientMaster()" style="background: #1D1D1F; color: white;" class="drawer-btn">새 환자 데이터 생성</button>
     </div>
   </div>
 
 
-  <!-- 메인 시스템 대시보드 스크린 -->
+  <!-- 메인 보드 인터페이스 -->
   <div id="main-system" style="display: none;">
     
-    <!-- 헤더 상단부 -->
-    <div class="system-header" style="background: #1E3A8A; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 12px; box-shadow: 0 4px 15px rgba(30,58,138,0.15); margin-bottom: 20px; border-bottom: 4px solid #FDE047;">
-      <h2 style="margin: 0; font-size: 19px; display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.5px;">🏥 SEMR 종합 진료 차트 시스템</h2>
-      <button onclick="toggleDrawer()" style="background: #0284C7; border: 1px solid #38bdf8; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px 12px; border-radius: 8px; gap:6px; font-weight:bold; transition: 0.2s;" title="메뉴 열기">
-        <span>☰</span> <span style="font-size:13px;">메뉴</span>
+    <!-- 상단 애플 스타일 화이트 헤더 바 -->
+    <div class="system-header" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.04); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 16px; box-shadow: 0 4px 30px rgba(0,0,0,0.02); margin-bottom: 24px;">
+      <h2 style="margin: 0; font-size: 18px; display: flex; align-items: center; gap: 8px; font-weight: 700; letter-spacing: -0.5px; color:#1D1D1F;">
+        <span style="background: #FFD60A; width: 12px; height: 12px; border-radius: 50%; display: inline-block;"></span> 
+        SEMR 보건 의료 기록 통합 관리 대시보드
+      </h2>
+      <button onclick="toggleDrawer()" style="background: #F5F5F7; border: 1px solid #E5E5EA; color: #1D1D1F; font-size: 14px; cursor: pointer; display: flex; align-items: center; padding: 8px 14px; border-radius: 10px; gap:6px; font-weight:600; transition: 0.2s;">
+        <span>☰</span> 제어판 열기
       </button>
     </div>
 
-    <!-- 반응형 메인 레이아웃 (등록 폼 이동으로 완전한 차트 집중형 구조 구현) -->
+    <!-- 적응형 그리드 레이아웃 바디 -->
     <div class="layout-grid">
         
-        <!-- 환자 실시간 검색창 및 통합 리스트 -->
-        <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(30,58,138,0.05); border: 1px solid #bae6fd; display: flex; flex-direction: column; min-height: 200px; max-height: 300px;">
-            <h3 style="margin-top: 0; color: #1E3A8A; margin-bottom: 12px; font-size: 16px; font-weight: 800;">🔍 등록 환자 검색 및 차트 파일 선택</h3>
-            <input type="text" id="patient-search-input" oninput="handlePatientSearch()" placeholder="검색할 환자 이름 또는 등록번호를 입력하세요..." style="width: 100%; padding: 11px; border: 1px solid #38BDF8; border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 12px; background: #f8fafc;">
+        <!-- 왼쪽 열: 실시간 환자 검색 영역 -->
+        <div class="apple-card" style="display: flex; flex-direction: column; height: 500px;">
+            <h3 style="margin-top: 0; color: #1D1D1F; margin-bottom: 14px; font-size: 15px; font-weight: 700;">🔍 등록 대상자 검색 및 연동</h3>
+            <input type="text" id="patient-search-input" oninput="handlePatientSearch()" placeholder="성명 또는 등록 번호 조회..." style="width: 100%; padding: 11px 14px; border: 1px solid #D2D2D7; border-radius: 10px; box-sizing: border-box; font-size: 13px; margin-bottom: 14px; background: #F5F5F7; outline:none; transition:0.2s;">
             
-            <div style="flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; background: #ffffff;" id="patient-list-zone"></div>
+            <div style="flex: 1; overflow-y: auto; border: 1px solid #E5E5EA; border-radius: 10px; background: #ffffff;" id="patient-list-zone"></div>
         </div>
 
-        <!-- 선택한 특정 환자의 상세 종합 레코드 차트 공간 -->
-        <div id="active-chart-viewport" style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(30,58,138,0.05); border: 1px solid #bae6fd; min-height: 400px;">
-            <div id="chart-empty-state" style="text-align: center; color: #94a3b8; padding: 80px 0;">
-                <span style="font-size: 50px; display: block; margin-bottom: 12px;">📋</span>
-                <p style="font-size: 15px; font-weight: 700; color: #64748b;">선택된 진료 차트 세션이 없습니다.</p>
-                <p style="font-size: 13px; color: #94a3b8; margin: 5px 0 0 0;">등록 환자를 선택하시면 과거 의무기록 조회 및<br>실시간 차트 작성이 활성화됩니다.</p>
+        <!-- 오른쪽 열: 활성 환자 상세 내역 레코드 진료지 -->
+        <div id="active-chart-viewport" class="apple-card" style="min-height: 500px;">
+            <div id="chart-empty-state" style="text-align: center; color: #86868B; padding: 120px 0;">
+                <span style="font-size: 44px; display: block; margin-bottom: 14px;">📋</span>
+                <p style="font-size: 15px; font-weight: 600; color: #1D1D1F;">선택 및 로드된 의무기록 파일이 없습니다.</p>
+                <p style="font-size: 13px; color: #86868B; margin-top: 6px;">왼쪽 명단에서 대상자를 선택하시면 실시간 기입장 및<br>누적 보건기록 일지가 자동 매칭 로드됩니다.</p>
             </div>
 
             <div id="chart-active-panel" style="display: none;">
                 
-                <!-- 동적 로드 환자 프로필 메인 바 -->
-                <div style="background: #f0f9ff; border: 1px solid #38bdf8; padding: 16px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px;">
+                <!-- 상단 대상자 프로필 섹션 -->
+                <div style="background: #F5F5F7; border: 1px solid rgba(0,0,0,0.03); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin:0; color:#1E3A8A; font-size: 19px; font-weight: 800;">
-                           👤 환자명: <span id="active-patient-name" style="color:#0284C7;">-</span> 
-                           <span id="active-patient-id" style="font-size:13px; color:#64748b; font-weight:normal; margin-left:6px;">(등록번호: -)</span>
+                        <h2 style="margin:0; color:#1D1D1F; font-size: 18px; font-weight: 700;">
+                           👤 환자명: <span id="active-patient-name" style="color:#768CF7;">-</span> 
+                           <span id="active-patient-id" style="font-size:13px; color:#86868B; font-weight:normal; margin-left:6px;"></span>
                         </h2>
-                        <button onclick="deletePatientMaster()" style="background:#FFF5F5; color:#EF4444; border:1px solid #FEE2E2; padding:5px 12px; border-radius:4px; font-size:12px; cursor:pointer; font-weight:bold;">환자 전체 삭제</button>
+                        <button onclick="deletePatientMaster()" style="background:#FFF2F1; color:#FF453A; border:1px solid #FFE5E3; padding:5px 12px; border-radius:6px; font-size:12px; cursor:pointer; font-weight:600;">데이터 완전 삭제</button>
                     </div>
-                    <div style="background: #ffedd5; border-left: 4px solid #f97316; padding: 10px; border-radius: 4px; margin-top: 4px;">
-                        <span style="font-size: 12px; font-weight: 800; color: #c2410c; display: block; margin-bottom: 2px;">⚠️ 환자별 주요 특이사항 및 임상 주의내역</span>
-                        <p id="active-patient-significant" style="margin:0; font-size:13px; color:#9a3412; font-weight:700;">-</p>
+                    <!-- 중요 특이사항 프레임 (애플 옐로우 하이라이팅 매칭) -->
+                    <div style="background: #FFFBE6; border-left: 4px solid #FFD60A; padding: 12px; border-radius: 6px; margin-top: 4px;">
+                        <span style="font-size: 11px; font-weight: 700; color: #B78103; display: block; margin-bottom: 2px;">⚠️ 주요 주의사항 및 만성질환력</span>
+                        <p id="active-patient-significant" style="margin:0; font-size:13px; color:#1D1D1F; font-weight:600;">-</p>
                     </div>
                 </div>
 
-                <!-- 실시간 새 의무기록 기입 공간 -->
-                <div style="background: #fafafa; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
-                    <h4 style="margin-top: 0; margin-bottom: 12px; color: #1E3A8A; font-size: 14px; font-weight: 800; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">📝 새 진료 차트 기입 레코드</h4>
+                <!-- 실시간 의무기록 입력 공간 -->
+                <div style="background: #FFFFFF; border: 1px solid #E5E5EA; padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+                    <h4 style="margin-top: 0; margin-bottom: 14px; color: #1D1D1F; font-size: 14px; font-weight: 700; border-bottom: 1px solid #F5F5F7; padding-bottom: 8px;">📝 새 외래 진료 내용 기입</h4>
                     
-                    <!-- 로켓 매크로 -->
-                    <div style="margin-bottom: 12px; background: #FEF08A; padding: 10px; border-radius: 6px; border: 1px dashed #EAB308;">
-                      <label style="display: block; font-size: 11px; font-weight: 800; color: #713F12; margin-bottom: 6px;">🚀 로켓 처방 세트 매크로 (클릭 즉시 자동 주입)</label>
-                      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-                        <button type="button" class="rocket-btn" onclick="applyRocketPreset('두통 및 오한', '타이레놀 1정 투약 후 침상 안정 수용')" style="border-radius: 4px; padding: 5px 10px; font-size: 11px; font-weight: 700; cursor:pointer;">💊 두통케어</button>
-                        <button type="button" class="rocket-btn" onclick="applyRocketPreset('소화불량 및 복통', '백초시럽 10ml 급여 및 온찜질 조치')" style="border-radius: 4px; padding: 5px 10px; font-size: 11px; font-weight: 700; cursor:pointer;">🧪 소화불량</button>
-                        <button type="button" class="rocket-btn" onclick="applyRocketPreset('찰과상 및 출혈', '생리식염수 세척 후 마데카솔 도포 및 멸균 밴드 부착')" style="border-radius: 4px; padding: 5px 10px; font-size: 11px; font-weight: 700; cursor:pointer;">🩹 찰과상처치</button>
-                        <button type="button" class="rocket-btn" onclick="applyRocketPreset('발목 염좌 및 부종', '에어파스 도포 후 냉찜질 고정 조치 및 무리한 운동 금지 안내')" style="border-radius: 4px; padding: 5px 10px; font-size: 11px; font-weight: 700; cursor:pointer;">🧊 발목염좌</button>
+                    <!-- 커스텀 유동 변환형 로켓 처방 UI 구역 -->
+                    <div style="margin-bottom: 16px; background: #F5F5F7; padding: 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.02);">
+                      <label style="display: block; font-size: 11px; font-weight: 700; color: #86868B; margin-bottom: 8px;">🚀 로켓 처방 원클릭 매크로 주입기</label>
+                      <div id="main-presets-zone" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                        <!-- 로컬 스토리지 데이터에 따라 가변 렌더링 처리 -->
                       </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px;">
                         <div>
-                            <label style="display: block; font-size: 12px; font-weight: 700; color: #1E3A8A; margin-bottom: 4px;">주요 상병 증상 (CC) <span style="color:#EF4444;">*</span></label>
-                            <input type="text" id="reg-symptoms" placeholder="예: 간헐적 복통 유발 고통 호소" style="width: 100%; padding: 11px; border: 1px solid #38BDF8; border-radius: 6px; box-sizing: border-box; font-size: 13px; background: white;">
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #1D1D1F; margin-bottom: 4px;">주요 상병 고충 증상 (CC) *</label>
+                            <input type="text" id="reg-symptoms" placeholder="증상 또는 호소 질환 유발 내역" style="width: 100%; padding: 11px; border: 1px solid #D2D2D7; border-radius: 8px; box-sizing: border-box; font-size: 13px; outline:none;">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 12px; font-weight: 700; color: #1E3A8A; margin-bottom: 4px;">처방 및 조치 내역 (Rx/Tx) <span style="color:#EF4444;">*</span></label>
-                            <input type="text" id="reg-treatment" placeholder="예: 소화제 1정 경구 투여 후 대기 조치" style="width: 100%; padding: 11px; border: 1px solid #38BDF8; border-radius: 6px; box-sizing: border-box; font-size: 13px; background: white;">
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #1D1D1F; margin-bottom: 4px;">처치 및 내복약 투약 처방 (Rx/Tx) *</label>
+                            <input type="text" id="reg-treatment" placeholder="처방 및 외과적 조치 내용" style="width: 100%; padding: 11px; border: 1px solid #D2D2D7; border-radius: 8px; box-sizing: border-box; font-size: 13px; outline:none;">
                         </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 5px;">
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 6px;">
                         <div>
-                            <label style="display: block; font-size: 12px; font-weight: 700; color: #1E3A8A; margin-bottom: 4px;">📸 임상 보조 사진 첨부 (선택)</label>
-                            <input type="file" id="reg-photo" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #38BDF8; border-radius: 6px; font-size: 12px; background: white; box-sizing: border-box;">
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #1D1D1F; margin-bottom: 4px;">📸 환부 및 보조 증빙 임상 사진 (선택)</label>
+                            <input type="file" id="reg-photo" accept="image/*" style="width: 100%; padding: 6px; border: 1px solid #D2D2D7; border-radius: 8px; font-size: 12px; box-sizing: border-box;">
                         </div>
-                        <button onclick="addNewChartRecord()" style="background: #1E3A8A; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(30,58,138,0.15);">💾 차트 저장 및 기록 연동</button>
+                        <button onclick="addNewChartRecord()" style="background: #768CF7; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; box-shadow: 0 4px 12px rgba(118, 140, 247, 0.25);">💾 차트 기록 백업 보존</button>
                     </div>
                 </div>
 
-                <!-- 히스토리 테이블 -->
-                <h3 style="margin-top: 0; color: #1E3A8A; margin-bottom: 12px; font-size: 15px; font-weight: 800; border-bottom: 2px solid #E0F2FE; padding-bottom: 8px;">📋 해당 환자의 누적 외래 기록 히스토리</h3>
+                <!-- 타임라인 누적 이력 조회 테이블 -->
+                <h3 style="margin-top: 0; color: #1D1D1F; margin-bottom: 12px; font-size: 14px; font-weight: 700;">📋 해당 피수용자 누적 방문 차트 역사</h3>
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 550px;">
                         <thead>
-                            <tr style="background: #1E3A8A; color: #ffffff; border-bottom: 2px solid #0284C7;">
-                              <th style="padding: 10px; font-weight: 700; width: 130px;">일시</th>
-                              <th style="padding: 10px; font-weight: 700;">주요 증상 (CC)</th>
-                              <th style="padding: 10px; font-weight: 700;">처방 및 조치 (Rx/Tx)</th>
-                              <th style="padding: 10px; font-weight: 700; text-align: center; width: 50px;">사진</th>
-                              <th style="padding: 10px; font-weight: 700; text-align: center; width: 50px;">제거</th>
+                            <tr style="background: #F5F5F7; color: #1D1D1F; border-bottom: 1px solid #E5E5EA;">
+                              <th style="padding: 12px 10px; font-weight: 700; width: 130px;">방문일시</th>
+                              <th style="padding: 12px 10px; font-weight: 700;">주요 증상 (CC)</th>
+                              <th style="padding: 12px 10px; font-weight: 700;">처방 및 처치 (Rx/Tx)</th>
+                              <th style="padding: 12px 10px; font-weight: 700; text-align: center; width: 50px;">증빙</th>
+                              <th style="padding: 12px 10px; font-weight: 700; text-align: center; width: 50px;">관리</th>
                             </tr>
                         </thead>
                         <tbody id="active-history-table-body"></tbody>
@@ -248,9 +290,9 @@
     </div>
   </div>
 
-  <!-- 이미지 모달 -->
-  <div id="image-modal" onclick="closeImageModal()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:20001; justify-content:center; align-items:center;">
-    <img id="modal-img" src="" style="max-width:90%; max-height:90%; border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.5); border: 2px solid #38BDF8;">
+  <!-- 글로벌 이미지 리더 팝업 모달 -->
+  <div id="image-modal" onclick="closeImageModal()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); z-index:20001; justify-content:center; align-items:center;">
+    <img id="modal-img" src="" style="max-width:85%; max-height:85%; border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,0.3);">
   </div>
 
   <div id="toast"></div>
@@ -279,6 +321,15 @@
     let globalCachedRecords = [];
     let selectedPatientId = null; 
 
+    const DEFAULT_PRESETS = [
+      { name: "💊 두통케어", symptoms: "두통 및 오한", treatment: "타이레놀 1정 투약 후 침상 안정 수용" },
+      { name: "🧪 소화불량", symptoms: "소화불량 및 복통", treatment: "백초시럽 10ml 급여 및 온찜질 조치" },
+      { name: "🩹 찰과상처치", symptoms: "찰과상 및 출혈", treatment: "생리식염수 세척 후 마데카솔 도포 및 멸균 밴드 부착" },
+      { name: "🧊 발목염좌", symptoms: "발목 염좌 및 부종", treatment: "에어파스 도포 후 냉찜질 고정 조치 및 무리한 운동 금지 안내" }
+    ];
+
+    let currentPresets = [];
+
     const loginOverlay = document.getElementById('login-overlay');
     const loginSection = document.getElementById('login-section');
     const signupSection = document.getElementById('signup-section');
@@ -290,45 +341,79 @@
     const mainSystem = document.getElementById('main-system');
     const userDisplay = document.getElementById('user-display-name');
 
-    // 드로어 열고 닫기
+    function initPresets() {
+      const saved = localStorage.getItem('semr_custom_presets');
+      if (saved) {
+        try { currentPresets = JSON.parse(saved); } catch(e) { currentPresets = [...DEFAULT_PRESETS]; }
+      } else {
+        currentPresets = [...DEFAULT_PRESETS];
+        localStorage.setItem('semr_custom_presets', JSON.stringify(currentPresets));
+      }
+      renderPresetEditorUI();
+      renderMainPresetsUI();
+    }
+
+    function renderPresetEditorUI() {
+      const container = document.getElementById('preset-editor-container');
+      if (!container) return;
+      container.innerHTML = "";
+      
+      currentPresets.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.style.cssText = "margin-bottom: 8px; border-bottom: 1px solid #F5F5F7; padding-bottom: 10px;";
+        div.innerHTML = `
+          <span style="font-size:11px; font-weight:700; color:#768CF7; display:block; margin-bottom:4px;">슬롯 ${index + 1}</span>
+          <input type="text" id="edit-preset-name-${index}" class="drawer-input" style="margin-bottom:4px;" value="${item.name}" placeholder="버튼 텍스트 명칭">
+          <input type="text" id="edit-preset-sym-${index}" class="drawer-input" style="margin-bottom:4px;" value="${item.symptoms}" placeholder="매크로 주요 상병 주입문">
+          <input type="text" id="edit-preset-tx-${index}" class="drawer-input" value="${item.treatment}" placeholder="매크로 처방/조치 내역 주입문">
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.savePresetSettings = function() {
+      for(let i=0; i<4; i++) {
+        const nameVal = document.getElementById(`edit-preset-name-${i}`).value.trim();
+        const symVal = document.getElementById(`edit-preset-sym-${i}`).value.trim();
+        const txVal = document.getElementById(`edit-preset-tx-${i}`).value.trim();
+
+        if(!nameVal || !symVal || !txVal) {
+          alert('모든 매크로 슬롯의 빈칸을 채워주셔야 처방 등재 처리가 가능합니다.');
+          return;
+        }
+        currentPresets[i] = { name: nameVal, symptoms: symVal, treatment: txVal };
+      }
+      localStorage.setItem('semr_custom_presets', JSON.stringify(currentPresets));
+      renderMainPresetsUI();
+      showToast('🚀 사용자 커스텀 로켓 매크로 구성표 업데이트가 적용되었습니다.');
+      toggleDrawer();
+    };
+
+    function renderMainPresetsUI() {
+      const zone = document.getElementById('main-presets-zone');
+      if(!zone) return;
+      zone.innerHTML = "";
+      
+      currentPresets.forEach(item => {
+        const btn = document.createElement('button');
+        btn.type = "button";
+        btn.className = "rocket-btn";
+        const safeSym = item.symptoms.replace(/'/g, "\\'");
+        const safeTx = item.treatment.replace(/'/g, "\\'");
+        btn.setAttribute('onclick', `applyRocketPreset('${safeSym}', '${safeTx}')`);
+        btn.textContent = item.name;
+        zone.appendChild(btn);
+      });
+    }
+
     window.toggleDrawer = function() {
       const drawer = document.getElementById('nav-drawer');
       const overlay = document.getElementById('drawer-overlay');
       if(drawer.classList.contains('open')) {
-        drawer.classList.remove('open');
-        overlay.classList.remove('show');
+        drawer.classList.remove('open'); overlay.classList.remove('show');
       } else {
-        drawer.classList.add('open');
-        overlay.classList.add('show');
+        drawer.classList.add('open'); overlay.classList.add('show');
       }
-    };
-
-    // 3개 최적화 해상도 모드 전환 제어 함수
-    window.changeViewMode = function(mode) {
-      const body = document.body;
-      
-      // 클래스 초기화 후 세팅
-      body.classList.remove('view-pad-portrait', 'view-pad-landscape', 'view-phone');
-      
-      // 모드 선택자 활성화 스타일 핸들링
-      document.getElementById('btn-mode-pad-landscape').classList.remove('active');
-      document.getElementById('btn-mode-pad-portrait').classList.remove('active');
-      document.getElementById('btn-mode-phone').classList.remove('active');
-
-      if (mode === 'pad-landscape') {
-        body.classList.add('view-pad-landscape');
-        document.getElementById('btn-mode-pad-landscape').classList.add('active');
-        showToast('💻 패드 가로 뷰포트(1180px)로 널찍하게 전환되었습니다.');
-      } else if (mode === 'pad-portrait') {
-        body.classList.add('view-pad-portrait');
-        document.getElementById('btn-mode-pad-portrait').classList.add('active');
-        showToast('📋 패드 세로 표준 규격(820px)으로 셋업되었습니다.');
-      } else if (mode === 'phone') {
-        body.classList.add('view-phone');
-        document.getElementById('btn-mode-phone').classList.add('active');
-        showToast('📱 휴대폰 세로 원핸드 컴팩트 뷰(450px)로 압축되었습니다.');
-      }
-      toggleDrawer();
     };
 
     document.getElementById('link-goto-signup').addEventListener('click', (e) => {
@@ -340,28 +425,29 @@
 
     document.getElementById('btn-signup').addEventListener('click', () => {
       const email = signupEmail.value.trim(); const password = signupPwd.value.trim(); errorMsg.style.display = 'none';
-      if(!email || !password) { alert('이메일과 비밀번호를 명확히 기입해 주십시오.'); return; }
+      if(!email || !password) { alert('이메일과 암호 항목 누락을 재검토하세요.'); return; }
       createUserWithEmailAndPassword(auth, email, password)
-        .then(() => { alert('🎉 계정 등록 완료!'); signupSection.style.display = 'none'; loginSection.style.display = 'block'; })
-        .catch((err) => { errorMsg.textContent = `⚠️ 오류: ${err.message}`; errorMsg.style.display = 'block'; });
+        .then(() => { alert('🎉 시스템 계정 발급 승인 완료!'); signupSection.style.display = 'none'; loginSection.style.display = 'block'; })
+        .catch((err) => { errorMsg.textContent = `⚠️ 계정 에러: ${err.message}`; errorMsg.style.display = 'block'; });
     });
 
     document.getElementById('btn-login').addEventListener('click', () => {
       const email = loginEmail.value.trim(); const password = loginPwd.value.trim(); errorMsg.style.display = 'none';
-      signInWithEmailAndPassword(auth, email, password).catch((err) => { errorMsg.textContent = "⚠️ 로그인 실패: 계정을 재확인해 주십시오."; errorMsg.style.display = 'block'; });
+      signInWithEmailAndPassword(auth, email, password).catch((err) => { errorMsg.textContent = "⚠️ 인증 거부: 계정 및 보안 상태를 재인증하십시오."; errorMsg.style.display = 'block'; });
     });
 
     document.getElementById('btn-google-login').addEventListener('click', () => {
       const provider = new GoogleAuthProvider(); errorMsg.style.display = 'none';
-      signInWithPopup(auth, provider).then(() => { showToast('🌐 구글 계정 동기화 완료.'); })
-        .catch((err) => { errorMsg.textContent = "⚠️ 로그인 연동 실패: " + err.message; errorMsg.style.display = 'block'; });
+      signInWithPopup(auth, provider).then(() => { showToast('🌐 구글 통합 세션 연동 성공.'); })
+        .catch((err) => { errorMsg.textContent = "⚠️ 로그인 실패: " + err.message; errorMsg.style.display = 'block'; });
     });
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
         loginOverlay.style.display = 'none'; mainSystem.style.display = 'block';
-        userDisplay.textContent = `🩺 ${user.email}`;
-        showToast('🔑 클라우드 보안 세션 안전 결속.');
+        userDisplay.textContent = `${user.email}`;
+        showToast('🔑 적응형 UI 대시보드 연동 완료.');
+        initPresets();
         syncFirestoreDatabase();
       } else {
         loginOverlay.style.display = 'flex'; mainSystem.style.display = 'none';
@@ -370,11 +456,8 @@
     });
 
     window.handleLogout = function() { 
-      if(confirm('로그아웃 하시겠습니까?')) {
-        signOut(auth).then(() => {
-          showToast('🔒 세션 안전 종료 완료.');
-          toggleDrawer();
-        }); 
+      if(confirm('진료 워크스페이스 세션을 안전하게 정리하고 종료하시겠습니까?')) {
+        signOut(auth).then(() => { showToast('🔒 원격 로그아웃 처리 완료.'); toggleDrawer(); }); 
       }
     };
 
@@ -383,7 +466,7 @@
       const treInput = document.getElementById('reg-treatment');
       if(symInput && treInput) {
          symInput.value = symptoms; treInput.value = treatment;
-         showToast('⚡ 매크로 처방을 본문에 주입했습니다.');
+         showToast('⚡ 해당 매크로 처방 세트를 주입했습니다.');
       }
     };
 
@@ -429,29 +512,24 @@
       const name = nameInput.value.trim();
       const significant = sigInput.value.trim();
 
-      if(!name) { alert('⚠️ 필수 조건인 환자 성명을 입력하세요.'); return; }
+      if(!name) { alert('⚠️ 마스터 지정을 위해 피수용자 성명 기입은 필수 수순입니다.'); return; }
 
       try {
         await addDoc(collection(db, "patients"), {
           studentId: studentId,
           name: name,
-          significant: significant || "특이사항 없음",
+          significant: significant || "특이 내역 부재",
           timestamp: Date.now()
         });
         idInput.value = ''; nameInput.value = ''; sigInput.value = '';
-        showToast('🎉 마스터 환자 파일 생성 및 데이터 등재 완결.');
-        toggleDrawer(); // 편의를 위해 등록 성공 시 서랍 자동 폐쇄
-      } catch(err) {
-        alert('네트워크 통신 오류 발생.');
-      }
+        showToast('🎉 마스터 보건 대상자 신규 데이터 등록 성료.');
+        toggleDrawer();
+      } catch(err) { alert('서버 패킷 거부.'); }
     };
 
     window.handlePatientSearch = function() {
       const keyword = document.getElementById('patient-search-input').value.trim().toLowerCase();
-      if(!keyword) {
-        renderPatientList(globalCachedPatients);
-        return;
-      }
+      if(!keyword) { renderPatientList(globalCachedPatients); return; }
       const filtered = globalCachedPatients.filter(p => 
         p.name.toLowerCase().includes(keyword) || 
         (p.studentId && p.studentId.toLowerCase().includes(keyword))
@@ -461,14 +539,12 @@
 
     function renderPatientList(listData) {
       const zone = document.getElementById('patient-list-zone');
-      if(!zone) return;
-      zone.innerHTML = '';
+      if(!zone) return; zone.innerHTML = '';
 
       if(listData.length === 0) {
-        zone.innerHTML = `<p style="text-align:center; padding:15px; font-size:12px; color:#94a3b8;">일치하는 데이터가 부재합니다.</p>`;
+        zone.innerHTML = `<p style="text-align:center; padding:20px; font-size:12px; color:#86868B;">매칭 정보 없음</p>`;
         return;
       }
-
       listData.sort((a,b) => b.timestamp - a.timestamp);
 
       listData.forEach(p => {
@@ -476,13 +552,13 @@
         div.className = `patient-item ${selectedPatientId === p.id ? 'active' : ''}`;
         div.onclick = () => selectPatientChart(p.id);
 
-        const idDisplay = p.studentId ? `[${p.studentId}]` : `[-]`;
+        const idStr = p.studentId ? `[${p.studentId}]` : `[-]`;
         div.innerHTML = `
           <div>
-            <span style="color:#1E3A8A; font-weight:800; font-size:13px; margin-right:4px;">${p.name}</span>
-            <span style="color:#64748b; font-size:11px;">${idDisplay}</span>
+            <span style="color:#1D1D1F; font-weight:600; font-size:13px; margin-right:4px;">${p.name}</span>
+            <span style="color:#86868B; font-size:11px;">${idStr}</span>
           </div>
-          <span style="font-size:11px; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:10px; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+          <span style="font-size:11px; background:rgba(118,140,247,0.12); color:#768CF7; padding:2px 8px; border-radius:8px; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500;">
             ${p.significant}
           </span>
         `;
@@ -498,7 +574,7 @@
       document.getElementById('chart-active-panel').style.display = 'block';
       
       refreshActiveChartUI();
-      showToast('🗂️ 환자별 원격 차트 연동 완료.');
+      showToast('🗂️ 지정 원격 의료 전자의무 기록지 파일 결속 수립.');
     };
 
     function refreshActiveChartUI() {
@@ -507,46 +583,44 @@
         selectedPatientId = null;
         document.getElementById('chart-empty-state').style.display = 'block';
         document.getElementById('chart-active-panel').style.display = 'none';
-        handlePatientSearch();
-        return;
+        handlePatientSearch(); return;
       }
 
       document.getElementById('active-patient-name').textContent = patientData.name;
-      document.getElementById('active-patient-id').textContent = `(등록번호: ${patientData.studentId || '미기입'})`;
+      document.getElementById('active-patient-id').textContent = `(고유번호: ${patientData.studentId || '미기재'})`;
       document.getElementById('active-patient-significant').textContent = patientData.significant;
 
       const historyBody = document.getElementById('active-history-table-body');
-      if(!historyBody) return;
-      historyBody.innerHTML = '';
+      if(!historyBody) return; historyBody.innerHTML = '';
 
       const myRecords = globalCachedRecords
         .filter(r => r.patientId === selectedPatientId)
         .sort((a, b) => b.timestamp - a.timestamp);
 
       if(myRecords.length === 0) {
-        historyBody.innerHTML = `<tr><td colspan="5" style="padding: 24px; text-align: center; color: #94a3b8; font-weight:600;">과거 차트 작성 기록이 없는 상태입니다.</td></tr>`;
+        historyBody.innerHTML = `<tr><td colspan="5" style="padding: 30px; text-align: center; color: #86868B; font-weight:500;">진료 이력이 없는 신규 차트 파일입니다.</td></tr>`;
         return;
       }
 
       myRecords.forEach(rec => {
         const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid #e2e8f0';
+        tr.style.borderBottom = '1px solid #F5F5F7';
         
         const d = rec.timestamp ? new Date(rec.timestamp) : new Date();
         const fullDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
         
-        let imgHtml = `<span style="color:#cbd5e0;">-</span>`;
+        let imgHtml = `<span style="color:#D2D2D7;">-</span>`;
         if(rec.photo) {
-          imgHtml = `<img src="${rec.photo}" onclick="openImageModal('${rec.photo}')" style="width:32px; height:32px; object-fit:cover; border-radius:4px; cursor:pointer; border:1px solid #38bdf8; display:block; margin:0 auto;">`;
+          imgHtml = `<img src="${rec.photo}" onclick="openImageModal('${rec.photo}')" style="width:30px; height:30px; object-fit:cover; border-radius:6px; cursor:pointer; border:1px solid #E5E5EA; display:block; margin:0 auto;">`;
         }
 
         tr.innerHTML = `
-          <td style="padding: 10px; color:#64748b; font-family:monospace; font-size:11px;">${fullDateStr}</td>
-          <td style="padding: 10px; color:#EF4444; font-weight:700;"><span style="border-left:3px solid #EF4444; padding-left:5px;">${rec.symptoms}</span></td>
-          <td style="padding: 10px; color:#0284C7; font-weight:600;">${rec.treatment}</td>
-          <td style="padding: 10px; text-align:center;">${imgHtml}</td>
-          <td style="padding: 10px; text-align:center;">
-             <button onclick="deleteSpecificRecord('${rec.id}')" style="background:#FFF5F5; color:#EF4444; border:1px solid #FEE2E2; padding:3px 6px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:bold;">삭제</button>
+          <td style="padding: 12px 10px; color:#86868B; font-family:monospace; font-size:11px;">${fullDateStr}</td>
+          <td style="padding: 12px 10px; color:#FF453A; font-weight:600;"><span style="border-left:3px solid #FF453A; padding-left:6px;">${rec.symptoms}</span></td>
+          <td style="padding: 12px 10px; color:#1D1D1F; font-weight:500;">${rec.treatment}</td>
+          <td style="padding: 12px 10px; text-align:center;">${imgHtml}</td>
+          <td style="padding: 12px 10px; text-align:center;">
+             <button onclick="deleteSpecificRecord('${rec.id}')" style="background:#FFF2F1; color:#FF453A; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:600;">파쇄</button>
           </td>
         `;
         historyBody.appendChild(tr);
@@ -554,7 +628,7 @@
     }
 
     window.addNewChartRecord = async function() {
-      if(!selectedPatientId) { alert('타겟 세션이 유실되었습니다.'); return; }
+      if(!selectedPatientId) { alert('인덱스 결속 실패.'); return; }
 
       const symInput = document.getElementById('reg-symptoms');
       const treInput = document.getElementById('reg-treatment');
@@ -563,10 +637,7 @@
       const symptoms = symInput.value.trim();
       const treatment = treInput.value.trim();
 
-      if(!symptoms || !treatment) {
-        alert('⚠️ 주요 증상(CC) 및 조치(Rx/Tx) 내역을 입력하세요.');
-        return;
-      }
+      if(!symptoms || !treatment) { alert('⚠️ 필수 가입 조건 항목인 주요증상 및 조치 내역을 완결 입력하세요.'); return; }
 
       let photoBase64 = "";
       if(photoFile) { photoBase64 = await encodeImageFile(photoFile); }
@@ -582,33 +653,29 @@
 
         symInput.value = ''; treInput.value = '';
         document.getElementById('reg-photo').value = '';
-        showToast('💾 의무기록 업데이트 연동 완료.');
-      } catch(err) {
-        alert('데이터 결속 실패.');
-      }
+        showToast('💾 외래 보건 의무 기록지에 복합체 연동 추가 완료.');
+      } catch(err) { alert('서버 쓰기 통신 규제 실패.'); }
     };
 
     window.deleteSpecificRecord = async function(recordId) {
-      if(confirm('🚨 영구 폐기 처리된 진료 내역은 되돌릴 수 없습니다. 삭제하시겠습니까?')) {
+      if(confirm('🚨 선택 처방 파기 시 복구가 불가합니다. 승인합니까?')) {
         try {
           await deleteDoc(doc(db, "records", recordId));
-          showToast('🗑️ 차트 내역 파쇄 완료.');
-        } catch(err) { alert('삭제 프로세스 제한.'); }
+          showToast('🗑️ 단일 처방 이력 레코드 영구 파쇄 완료.');
+        } catch(err) { alert('오류.'); }
       }
     };
 
     window.deletePatientMaster = async function() {
       if(!selectedPatientId) return;
-      if(confirm('🚨 환자 삭제 시 누적된 과거 모든 의무기록 히스토리가 동시 파쇄 소멸합니다. 정말 삭제합니까?')) {
+      if(confirm('🚨 해당 인원을 영구 삭제 처리하면 축적 보존된 누적 보건 외래 차트 전체 기록 복합체가 원격 클라우드에서 일괄 파괴 소멸합니다. 진행합니까?')) {
         try {
           const relativeRecords = globalCachedRecords.filter(r => r.patientId === selectedPatientId);
-          for(const rec of relativeRecords) {
-            await deleteDoc(doc(db, "records", rec.id));
-          }
+          for(const rec of relativeRecords) { await deleteDoc(doc(db, "records", rec.id)); }
           await deleteDoc(doc(db, "patients", selectedPatientId));
           selectedPatientId = null;
-          showToast('🗑️ 환자 종합 데이터 영구 제거 완료.');
-        } catch(err) { alert('마스터 제거 실패.'); }
+          showToast('🗑️ 대상자 및 연계 데이터베이스 마스터 제거 완결.');
+        } catch(err) { alert('권한 제한.'); }
       }
     };
 
