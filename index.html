@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SchoolCare 보건실 EMR 시스템</title>
+  
+  <!-- 💡 [참고] 네 기존 코드 맨 위에 있던 <style> 태그나 폰트 링크 링크가 있다면 여기에 똑같이 넣어주면 돼! -->
+  <style>
+    body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #f4f6f9; }
+    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 24px; border-radius: 8px; display: none; z-index: 10000; font-size: 14px; }
+    #toast.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================== -->
+  <!-- 1. 로그인 오버레이 화면 (로그인 전까지 전체를 가림) -->
+  <!-- ========================================== -->
+  <div id="login-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color:#1B2A6B; z-index:9999; display:flex; justify-content:center; align-items:center;">
+    <div style="background:white; padding:40px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.3); width:100%; max-width:400px; text-align:center;">
+      <h2 style="color:#1B2A6B; margin-bottom:10px; font-weight:700;">SchoolCare Login</h2>
+      <p style="color:#5A6899; font-size:14px; margin-bottom:30px;">학교 건강 관리 시스템 로그인</p>
+      
+      <div style="text-align:left; margin-bottom:15px;">
+        <label style="font-size:12px; color:#1B2A6B; font-weight:700; display:block; margin-bottom:5px;">이메일 주소</label>
+        <input type="email" id="login-email" placeholder="example@school.ac.kr" style="width:100%; padding:12px; border:1px solid #DDE1F0; border-radius:8px; box-sizing:border-box;">
+      </div>
+      
+      <div style="text-align:left; margin-bottom:25px;">
+        <label style="font-size:12px; color:#1B2A6B; font-weight:700; display:block; margin-bottom:5px;">비밀번호</label>
+        <input type="password" id="login-pwd" placeholder="••••••••" style="width:100%; padding:12px; border:1px solid #DDE1F0; border-radius:8px; box-sizing:border-box;">
+      </div>
+      
+      <button id="btn-login" style="width:100%; padding:14px; background:#FFD600; color:#1B2A6B; border:none; border-radius:8px; font-weight:700; font-size:16px; cursor:pointer; margin-bottom:10px;">로그인</button>
+      <p id="login-error" style="color:#E53E3E; font-size:13px; margin-top:10px; display:none;"></p>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 2. 네 기존 보건실 시스템 UI 디자인 구역 -->
+  <!-- ========================================== -->
+  <div id="main-system">
+    
+    <!-- ⬇️여기에 네가 원래 만들었던 예쁜 보건실 HTML 코드(디자인 태그들)를 통째로 붙여넣어줘! -->
+    
+    <div style="padding: 40px; text-align: center;">
+      <h1>🏫 보건실 EMR 시스템이 성공적으로 연결되었습니다!</h1>
+      <p>여기에 원래 가지고 있던 메인 UI 디자인 코드들을 쏙 집어넣으면 깔끔하게 합쳐져.</p>
+      <button onclick="handleLogout()" style="margin-top:20px; padding: 10px 20px; background: #e53e3e; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">로그아웃 하기</button>
+    </div>
+
+    <!-- ⬆️기존 HTML 코드 붙여넣기 끝! -->
+
+  </div>
+
+  <!-- 알림 메시지창(토스트) -->
+  <div id="toast"></div>
+
+
+  <!-- ========================================== -->
+  <!-- 3. 파이어베이스 데이터베이스 및 로그인 제어 스크립트 -->
+  <!-- ========================================== -->
+  <script type="module">
+    // Firebase 웹 라이브러리 로드
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    // ⚠️ 중요: 구글 파이어베이스 콘솔에서 발급받은 진짜 네 금고 열쇠 정보로 채워넣어야 정상 작동해!
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // 시스템 초기화
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let students = [];
+    let rocketPresets = [];
+
+    // HTML 태그 가져오기
+    const loginOverlay = document.getElementById('login-overlay');
+    const emailInput = document.getElementById('login-email');
+    const pwdInput = document.getElementById('login-pwd');
+    const loginBtn = document.getElementById('btn-login');
+    const errorMsg = document.getElementById('login-error');
+
+    // 로그인 버튼 클릭했을 때 작동하는 기능
+    loginBtn.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      const password = pwdInput.value.trim();
+      errorMsg.style.display = 'none';
+
+      signInWithEmailAndPassword(auth, email, password)
+        .catch((error) => {
+          errorMsg.textContent = "⚠️ 로그인 실패: 아이디 또는 비밀번호를 확인하세요.";
+          errorMsg.style.display = 'block';
+        });
+    });
+
+    // 사용자가 로그인했는지 로그아웃했는지 실시간 감시하는 기능
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginOverlay.style.display = 'none'; // 로그인 성공하면 창 숨기기
+        showToast('🔑 보건 시스템 주 서버에 접속했습니다.');
+        syncDataWithFirestore(); // DB 실시간 동기화 켜기
+      } else {
+        loginOverlay.style.display = 'flex'; // 로그아웃되면 다시 로그인창 띄우기
+        emailInput.value = '';
+        pwdInput.value = '';
+      }
+    });
+
+    // 로그아웃 버튼 기능
+    window.handleLogout = function() {
+      signOut(auth).then(() => {
+        showToast('🔒 안전하게 로그아웃 되었습니다.');
+      });
+    }
+
+    // 구글 클라우드 DB와 내 웹사이트 실시간 동기화시키기
+    function syncDataWithFirestore() {
+      onSnapshot(collection(db, "students"), (snapshot) => {
+        students = [];
+        snapshot.forEach((doc) => {
+          students.push({ dbId: doc.id, ...doc.data() });
+        });
+        // 기존에 네 코드에 들어있던 학생 목록 화면 갱신 함수를 실행함
+        if (typeof renderStudents === 'function') renderStudents(students);
+      });
+    }
+
+    // 화면 하단에 잠깐 떴다 사라지는 알림창 기능
+    window.showToast = function(msg){
+      const t = document.getElementById('toast');
+      if(t) {
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+      }
+    };
+  </script>
+</body>
+</html>
