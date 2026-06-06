@@ -69,15 +69,15 @@
     import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     // ⚠️ 중요: 구글 파이어베이스 콘솔에서 발급받은 진짜 네 금고 열쇠 정보로 채워넣어야 정상 작동해!
-const firebaseConfig = {
-    apiKey: "AIzaSyBYJYh5NteOmg2SfuydeFAcYy0lLjDn8iI",
-    authDomain: "semr-d0dcb.firebaseapp.com",
-    projectId: "semr-d0dcb",
-    storageBucket: "semr-d0dcb.firebasestorage.app",
-    messagingSenderId: "294566859435",
-    appId: "1:294566859435:web:bb16da8b51bec94b335dee",
-    measurementId: "G-SJY365QJ02"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBYJYh5NteOmg2SfuydeFAcYy0lLjDn8iI",
+      authDomain: "semr-d0dcb.firebaseapp.com",
+      projectId: "semr-d0dcb",
+      storageBucket: "semr-d0dcb.firebasestorage.app",
+      messagingSenderId: "294566859435",
+      appId: "1:294566859435:web:bb16da8b51bec94b335dee",
+      measurementId: "G-SJY365QJ02"
+    };
 
     // 시스템 초기화
     const app = initializeApp(firebaseConfig);
