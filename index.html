@@ -204,6 +204,123 @@
         setTimeout(() => t.classList.remove('show'), 3000);
       }
     };
+    // ==========================================
+// 🏥 보건실 시스템 핵심 기능 코드 (JavaScript)
+// ==========================================
+
+// 1. [등록 버튼] 입력한 내용을 구글 클라우드(Firestore) 데이터베이스에 저장하기
+window.addStudent = async function() {
+    const grade = document.getElementById('reg-grade').value.trim();
+    const className = document.getElementById('reg-class').value.trim();
+    const number = document.getElementById('reg-number').value.trim();
+    const name = document.getElementById('reg-name').value.trim();
+    const symptoms = document.getElementById('reg-symptoms').value.trim();
+    const treatment = document.getElementById('reg-treatment').value.trim();
+    
+    // 빈칸이 하나라도 있으면 경고창 띄우고 중단
+    if(!grade || !className || !number || !name || !symptoms || !treatment) {
+        alert('⚠️ 모든 칸을 입력해야 보건 기록을 등록할 수 있습니다!');
+        return;
+    }
+    
+    try {
+        // 구글 데이터베이스의 "students" 라는 방에 차곡차곡 업로드하기
+        await addDoc(collection(db, "students"), {
+            grade: grade,
+            className: className,
+            number: number,
+            name: name,
+            symptoms: symptoms,
+            treatment: treatment,
+            timestamp: Date.now() // 등록한 실시간 시간 기록
+        });
+        
+        // 저장이 끝나면 입력창을 깨끗하게 비워주기
+        document.getElementById('reg-grade').value = '';
+        document.getElementById('reg-class').value = '';
+        document.getElementById('reg-number').value = '';
+        document.getElementById('reg-name').value = '';
+        document.getElementById('reg-symptoms').value = '';
+        document.getElementById('reg-treatment').value = '';
+        
+        alert('➕ 보건 기록이 안전하게 클라우드에 저장되었습니다!');
+    } catch (error) {
+        console.error("데이터 저장 오류 발생:", error);
+        alert('서버에 저장하지 못했습니다. Firebase 설정이나 인터넷 연결을 확인해 주세요.');
+    }
+};
+
+// 2. [실시간 동기화] 데이터베이스에 변화가 생기면 자동으로 감지해서 화면에 보여주기
+if (typeof db !== 'undefined') {
+    try {
+        // "students" 방을 실시간으로 감시해줘! 라고 구글 서버에 요청하는 것
+        const q = query(collection(db, "students"));
+        onSnapshot(q, (snapshot) => {
+            const studentsData = [];
+            snapshot.forEach((doc) => {
+                studentsData.push({ dbId: doc.id, ...doc.data() });
+            });
+            // 아래 3번 함수를 실행해서 화면 테이블에 그려줌
+            window.renderStudents(studentsData);
+        });
+    } catch (e) {
+        console.log("실시간 데이터 연결 대기 중...");
+    }
+}
+
+// 3. [화면 갱신] 받아온 환자 명단을 HTML 테이블에 예쁘게 그려주는 함수
+window.renderStudents = function(studentsData) {
+    const listBody = document.getElementById('student-list');
+    if (!listBody) return;
+    
+    // 기존에 그려져 있던 가짜/옛날 데이터 싹 지우기
+    listBody.innerHTML = '';
+    
+    // 가장 최근에 방문한 학생이 맨 위로 오도록 시간순 정렬
+    studentsData.sort((a, b) => b.timestamp - a.timestamp);
+    
+    if(studentsData.length === 0) {
+        listBody.innerHTML = `<tr><td colspan="6" style="padding: 30px; text-align: center; color: #a0aec0;">아직 오늘 방문한 학생이 없습니다.</td></tr>`;
+        return;
+    }
+    
+    // 학생 데이터를 한 줄씩 돌면서 HTML 태그 생성
+    studentsData.forEach(student => {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #edf2f7';
+        tr.style.background = 'white';
+        
+        // 저장된 시간 숫자를 "몇시 몇분" 글자로 바꾸기
+        const date = student.timestamp ? new Date(student.timestamp) : new Date();
+        const timeStr = `${date.getHours()}시 ${String(date.getMinutes()).padStart(2, '0')}분`;
+        
+        tr.innerHTML = `
+            <td style="padding: 14px 12px; color: #718096; font-size: 14px;">${timeStr}</td>
+            <td style="padding: 14px 12px; color: #4a5568;">${student.grade}학년 ${student.className}반 ${student.number}번</td>
+            <td style="padding: 14px 12px; font-weight: 600; color: #2d3748;">${student.name}</td>
+            <td style="padding: 14px 12px; color: #e53e3e; font-weight: 500;">${student.symptoms}</td>
+            <td style="padding: 14px 12px; color: #2b6cb0;">${student.treatment}</td>
+            <td style="padding: 14px 12px; text-align: center;">
+                <button onclick="deleteStudent('${student.dbId}')" style="background: #fed7d7; color: #c53030; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;">삭제</button>
+            </td>
+        `;
+        listBody.appendChild(tr);
+    });
+};
+
+// 4. [삭제 버튼] 잘못 등록된 기록을 구글 클라우드에서 영구 삭제하기
+window.deleteStudent = async function(id) {
+    if(confirm('🚨 이 학생의 보건실 방문 기록을 정말 삭제하시겠습니까?')) {
+        try {
+            await deleteDoc(doc(db, "students", id));
+            alert('🗑️ 기록이 정상적으로 삭제되었습니다.');
+        } catch (error) {
+            console.error("삭제 실패:", error);
+            alert('삭제 권한이 없거나 오류가 발생했습니다.');
+        }
+    }
+};
+
   </script>
 </body>
 </html>
