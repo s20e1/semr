@@ -28,8 +28,8 @@
       
       <div id="login-section">
         <div style="text-align:left; margin-bottom:15px;">
-          <label style="font-size:13px; color:#1E3A8A; font-weight:700; display:block; margin-bottom:6px;">의료진 이메일</label>
-          <input type="email" id="login-email" placeholder="doctor@school.ac.kr" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
+          <label style="font-size:13px; color:#1E3A8A; font-weight:700; display:block; margin-bottom:6px;">이메일 주소</label>
+          <input type="email" id="login-email" placeholder="user@domain.com" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
         </div>
         
         <div style="text-align:left; margin-bottom:20px;">
@@ -49,13 +49,13 @@
           Google 계정으로 로그인
         </button>
 
-        <p style="color:#64748b; font-size:13px; margin:0;">아직 의료진 계정이 없으신가요? <a href="#" id="link-goto-signup" style="color:#38BDF8; font-weight:700; text-decoration:none;">새 계정 등록</a></p>
+        <p style="color:#64748b; font-size:13px; margin:0;">아직 계정이 없으신가요? <a href="#" id="link-goto-signup" style="color:#38BDF8; font-weight:700; text-decoration:none;">새 계정 등록</a></p>
       </div>
 
       <div id="signup-section" style="display: none;">
         <div style="text-align:left; margin-bottom:15px;">
           <label style="font-size:13px; color:#1E3A8A; font-weight:700; display:block; margin-bottom:6px;">새 이메일 주소</label>
-          <input type="email" id="signup-email" placeholder="new-doctor@school.ac.kr" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
+          <input type="email" id="signup-email" placeholder="new-user@domain.com" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
         </div>
         
         <div style="text-align:left; margin-bottom:20px;">
@@ -63,7 +63,7 @@
           <input type="password" id="signup-pwd" placeholder="••••••••" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
         </div>
         
-        <button id="btn-signup" style="width:100%; padding:14px; background:#38BDF8; color:white; border:none; border-radius:8px; font-weight:700; font-size:16px; cursor:pointer; margin-bottom:20px; transition: 0.2s; box-shadow: 0 4px 6px rgba(56,189,248,0.2);">의료진 계정 생성하기</button>
+        <button id="btn-signup" style="width:100%; padding:14px; background:#38BDF8; color:white; border:none; border-radius:8px; font-weight:700; font-size:16px; cursor:pointer; margin-bottom:20px; transition: 0.2s; box-shadow: 0 4px 6px rgba(56,189,248,0.2);">새 계정 생성하기</button>
         <p style="color:#64748b; font-size:13px; margin:0;">이미 계정이 있으신가요? <a href="#" id="link-goto-login" style="color:#1E3A8A; font-weight:700; text-decoration:none;">로그인으로 돌아가기</a></p>
       </div>
       
@@ -77,7 +77,7 @@
     <div style="background: #1E3A8A; color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 12px; box-shadow: 0 4px 15px rgba(30,58,138,0.15); margin-bottom: 20px; border-bottom: 4px solid #FDE047;">
       <h2 style="margin: 0; font-size: 22px; display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.5px;">🩺 SEMR 종합 전자의무기록 시스템</h2>
       <div style="display:flex; align-items:center; gap:15px;">
-        <span id="user-display-name" style="font-size:14px; background: rgba(255,255,255,0.15); padding:6px 12px; border-radius:20px; font-weight: bold; border: 1px solid #38BDF8;">의료진 접속 중</span>
+        <span id="user-display-name" style="font-size:14px; background: rgba(255,255,255,0.15); padding:6px 12px; border-radius:20px; font-weight: bold; border: 1px solid #38BDF8;">시스템 접속 중</span>
         <button onclick="handleLogout()" style="background: #EF4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;">시스템 로그아웃</button>
       </div>
     </div>
@@ -91,7 +91,7 @@
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
                     <div>
-                        <label style="display: block; font-size: 13px; font-weight: 700; color: #1E3A8A; margin-bottom: 6px;">학번 <span style="color:#94a3b8; font-weight:normal;">(선택)</span></label>
+                        <label style="display: block; font-size: 13px; font-weight: 700; color: #1E3A8A; margin-bottom: 6px;">등록 번호 <span style="color:#94a3b8; font-weight:normal;">(선택)</span></label>
                         <input type="text" id="reg-student-id" placeholder="예: 30222" style="width: 100%; padding: 11px; border: 1px solid #38BDF8; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fafafa;">
                     </div>
                     <div>
@@ -137,7 +137,7 @@
                     <thead>
                         <tr style="background: #1E3A8A; color: #ffffff; border-bottom: 2px solid #0284C7;">
                           <th style="padding: 14px 12px; font-weight: 700; width: 80px;">차트 시각</th>
-                          <th style="padding: 14px 12px; font-weight: 700; width: 90px;">학번</th>
+                          <th style="padding: 14px 12px; font-weight: 700; width: 90px;">등록번호</th>
                           <th style="padding: 14px 12px; font-weight: 700; width: 120px;">성명 / 기록</th>
                           <th style="padding: 14px 12px; font-weight: 700;">주요 증상</th>
                           <th style="padding: 14px 12px; font-weight: 700;">처방 및 조치 내용</th>
@@ -173,7 +173,6 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    // GoogleAuthProvider를 임포트 목록에 추가했습니다.
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
@@ -238,7 +237,7 @@
 
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          alert('🎉 SEMR 의료진 계정이 등록되었습니다! 즉시 메인 화면으로 이동합니다.');
+          alert('🎉 SEMR 계정이 등록되었습니다! 즉시 메인 화면으로 이동합니다.');
           signupSection.style.display = 'none';
           loginSection.style.display = 'block';
         })
@@ -261,7 +260,7 @@
         });
     });
 
-    // 구글 계정 OAuth 연동으로 변경 완료
+    // 구글 계정 OAuth 연동
     document.getElementById('btn-google-login').addEventListener('click', () => {
       const provider = new GoogleAuthProvider();
       errorMsg.style.display = 'none';
@@ -281,7 +280,7 @@
       if (user) {
         loginOverlay.style.display = 'none';
         mainSystem.style.display = 'block';
-        userDisplay.textContent = `🩺 ${user.email.split('@')[0]} 교사 접속중`;
+        userDisplay.textContent = `🩺 ${user.email.split('@')[0]} 접속중`;
         showToast('🔑 SEMR 클라우드 실시간 암호화 연동 성공.');
         syncDataWithFirestore();
       } else {
@@ -430,7 +429,7 @@
         });
     };
 
-    // 특정 학생 과거 이력 추적 모달 실행
+    // 특정 대상 과거 이력 추적 모달 실행
     window.openHistoryModal = function(studentName) {
       const historyList = globalCachedData
         .filter(item => item.name === studentName)
@@ -439,11 +438,11 @@
       const titleEl = document.getElementById('history-title');
       const contentEl = document.getElementById('history-content');
 
-      titleEl.innerHTML = `🏥 <strong>[${studentName}]</strong> 환자 누적 의무기록 히스토리 <span style="font-size:12px; color:#64748b; font-weight:normal;">(총 ${historyList.length}건)</span>`;
+      titleEl.innerHTML = `🏥 <strong>[${studentName}]</strong> 누적 기록 히스토리 <span style="font-size:12px; color:#64748b; font-weight:normal;">(총 ${historyList.length}건)</span>`;
       contentEl.innerHTML = '';
 
       if(historyList.length === 0) {
-        contentEl.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:20px 0;">이전 내원 이력이 조회되지 않습니다.</p>`;
+        contentEl.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:20px 0;">이전 기록이 조회되지 않습니다.</p>`;
       } else {
         historyList.forEach(history => {
           const d = history.timestamp ? new Date(history.timestamp) : new Date();
@@ -454,8 +453,8 @@
           
           box.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:11px; color:#64748b; font-weight:bold;">
-              <span>🕒 진료시점: ${fullDateStr}</span>
-              <span style="background:#E0F2FE; color:#1E3A8A; padding:2px 6px; border-radius:4px;">학번: ${history.studentId || '미기입'}</span>
+              <span>🕒 입력시점: ${fullDateStr}</span>
+              <span style="background:#E0F2FE; color:#1E3A8A; padding:2px 6px; border-radius:4px;">등록번호: ${history.studentId || '미기입'}</span>
             </div>
             <div style="margin-bottom:4px;"><strong style="color:#EF4444;">[증상]</strong> ${history.symptoms}</div>
             <div><strong style="color:#0284C7;">[처방]</strong> ${history.treatment}</div>
@@ -473,10 +472,10 @@
 
     // 영구 파쇄 소멸 처리
     window.deleteStudent = async function(id) {
-        if(confirm('🚨 영구 폐기된 의무기록 차트는 절대 복구할 수 없습니다. 정말 소멸 처리합니까?')) {
+        if(confirm('🚨 영구 폐기된 차트는 절대 복구할 수 없습니다. 정말 소멸 처리합니까?')) {
             try {
                 await deleteDoc(doc(db, "students", id));
-                showToast('🗑️ 지정된 세션 진료차트 영구 파쇄 처리 완료.');
+                showToast('🗑️ 지정된 세션 차트 영구 파쇄 처리 완료.');
             } catch (error) {
                 alert('차트 제거 중 실패.');
             }
