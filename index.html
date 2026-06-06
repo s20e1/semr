@@ -40,4 +40,460 @@
         <button id="btn-login" style="width:100%; padding:14px; background:#1E3A8A; color:white; border:none; border-radius:8px; font-weight:700; font-size:16px; cursor:pointer; margin-bottom:15px; transition: 0.2s; box-shadow: 0 4px 6px rgba(30,58,138,0.2);">시스템 접속 (로그인)</button>
         
         <button id="btn-apple-login" style="width:100%; padding:12px; background:#000000; color:white; border:none; border-radius:8px; font-weight:600; font-size:14px; cursor:pointer; margin-bottom:20px; display:flex; align-items:center; justify-content:center; gap:8px;">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><path d="M13.18 8.413c.027-2.311 1.897-3.1 1.913-3.11-.107-.157-1.684-2.39-4.015-2.553-1.928-.15-3.834 1.189-4.804 1.189-.983 0-2.557-1.127-4.167-1.097-2.113.033-4.066 1.242-5.15 3.136-2.22 3.864-.567 9.53 1.577 12.637 1.054 1.516 2.29 3.203 3.917 3.14 1.572-.064 2.164-1.012 3.963-1.012 1.79 0 2.338 1.012 3.978.98 1.67-.03 2.76-1.533 3.774-3.023 1.18-1.714 1.662-3.385 1.687-3.473-.036-.015-3.242-1.246-3.21-4.965zM10.74 2.108c.808-.987 1.353-2.355 1.204-3.718-1.165.048-2.58.784-3.418 1
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><path d="M13.18 8.413c.027-2.311 1.897-3.1 1.913-3.11-.107-.157-1.684-2.39-4.015-2.553-1.928-.15-3.834 1.189-4.804 1.189-.983 0-2.557-1.127-4.167-1.097-2.113.033-4.066 1.242-5.15 3.136-2.22 3.864-.567 9.53 1.577 12.637 1.054 1.516 2.29 3.203 3.917 3.14 1.572-.064 2.164-1.012 3.963-1.012 1.79 0 2.338 1.012 3.978.98 1.67-.03 2.76-1.533 3.774-3.023 1.18-1.714 1.662-3.385 1.687-3.473-.036-.015-3.242-1.246-3.21-4.965zM10.74 2.108c.808-.987 1.353-2.355 1.204-3.718-1.165.048-2.58.784-3.418 1.772-.75.875-1.404 2.263-1.228 3.607 1.295.1 2.634-.674 3.442-1.66z"/></svg>
+          Sign in with Apple
+        </button>
+
+        <p style="color:#64748b; font-size:13px; margin:0;">아직 의료진 계정이 없으신가요? <a href="#" id="link-goto-signup" style="color:#38BDF8; font-weight:700; text-decoration:none;">새 계정 등록</a></p>
+      </div>
+
+      <div id="signup-section" style="display: none;">
+        <div style="text-align:left; margin-bottom:15px;">
+          <label style="font-size:13px; color:#1E3A8A; font-weight:700; display:block; margin-bottom:6px;">새 이메일 주소</label>
+          <input type="email" id="signup-email" placeholder="new-doctor@school.ac.kr" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
+        </div>
+        
+        <div style="text-align:left; margin-bottom:20px;">
+          <label style="font-size:13px; color:#1E3A8A; font-weight:700; display:block; margin-bottom:6px;">비밀번호 설정 (6자리 이상)</label>
+          <input type="password" id="signup-pwd" placeholder="••••••••" style="width:100%; padding:12px; border:1px solid #38BDF8; border-radius:8px; box-sizing:border-box; font-size:15px; background: #f8fafc;">
+        </div>
+        
+        <button id="btn-signup" style="width:100%; padding:14px; background:#38BDF8; color:white; border:none; border-radius:8px; font-weight:700; font-size:16px; cursor:pointer; margin-bottom:20px; transition: 0.2s; box-shadow: 0 4px 6px rgba(56,189,248,0.2);">의료진 계정 생성하기</button>
+        <p style="color:#64748b; font-size:13px; margin:0;">이미 계정이 있으신가요? <a href="#" id="link-goto-login" style="color:#1E3A8A; font-weight:700; text-decoration:none;">로그인으로 돌아가기</a></p>
+      </div>
+      
+      <p id="login-error" style="color:#EF4444; font-size:13px; margin-top:15px; display:none; font-weight: 600;"></p>
+    </div>
+  </div>
+
+
+  <div id="main-system" style="display: none; max-width: 1600px; margin: 0 auto; padding: 20px;">
+    
+    <div style="background: #1E3A8A; color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 12px; box-shadow: 0 4px 15px rgba(30,58,138,0.15); margin-bottom: 20px; border-bottom: 4px solid #FDE047;">
+      <h2 style="margin: 0; font-size: 22px; display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.5px;">🩺 SEMR 종합 전자의무기록 시스템</h2>
+      <div style="display:flex; align-items:center; gap:15px;">
+        <span id="user-display-name" style="font-size:14px; background: rgba(255,255,255,0.15); padding:6px 12px; border-radius:20px; font-weight: bold; border: 1px solid #38BDF8;">의료진 접속 중</span>
+        <button onclick="handleLogout()" style="background: #EF4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;">시스템 로그아웃</button>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 20px; align-items: start;">
+        
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(30,58,138,0.05); border: 1px solid #bae6fd;">
+                <h3 style="margin-top: 0; color: #1E3A8A; margin-bottom: 20px; font-size: 18px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #E0F2FE; padding-bottom: 10px; font-weight: 800;">📝 환자 접수 및 진료 차트 작성</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 700; color: #1E3A8A; margin-bottom: 6px;">학번 <span style="color:#94a3b8; font-weight:normal;">(선택)</span></label>
+                        <input type="text" id="reg-student-id" placeholder="예: 30222" style="width: 100%; padding: 11px; border: 1px solid #38BDF8; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fafafa;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 700; color: #1E3A8A; margin-bottom: 6px;">성명 <span style="color:#EF4444;">*</span></label>
+                        <input type="text" id="reg-name" placeholder="환자 이름 (필수)" style="width: 100%; padding: 11px; border: 1px solid #38BDF8; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fafafa;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px; background: #FEF08A; padding: 14px; border-radius: 8px; border: 1px dashed #EAB308; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                  <label style="display: block; font-size: 12px; font-weight: 800; color: #713F12; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">🚀 로켓 처방 세트 (클릭 시 자동 입력)</label>
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    <button type="button" class="rocket-btn" onclick="applyRocketPreset('두통 및 오한', '타이레놀 1정 투약 후 침상 안정 수용')" style="border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">💊 두통케어</button>
+                    <button type="button" class="rocket-btn" onclick="applyRocketPreset('소화불량 및 복통', '백초시럽 10ml 급여 및 온찜질 조치')" style="border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🧪 소화불량</button>
+                    <button type="button" class="rocket-btn" onclick="applyRocketPreset('찰과상 및 출혈', '생리식염수 세척 후 마데카솔 도포 및 멸균 밴드 부착')" style="border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🩹 찰과상처치</button>
+                    <button type="button" class="rocket-btn" onclick="applyRocketPreset('발목 염좌 및 부종', '에어파스 도포 후 냉찜질 고정 조치 및 무리한 운동 금지 안내')" style="border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🧊 발목염좌</button>
+                  </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 700; color: #1E3A8A; margin-bottom: 6px;">주요 상병 증상 (CC) <span style="color:#EF4444;">*</span></label>
+                        <input type="text" id="reg-symptoms" placeholder="예: 복통 및 두통, 가벼운 찰과상" style="width: 100%; padding: 11px; border: 1px solid #38BDF8; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fafafa;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 700; color: #1E3A8A; margin-bottom: 6px;">처방 및 조치 내역 (Rx/Tx) <span style="color:#EF4444;">*</span></label>
+                        <input type="text" id="reg-treatment" placeholder="예: 소화제 복용 후 20분 침상 안정" style="width: 100%; padding: 11px; border: 1px solid #38BDF8; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fafafa;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 13px; font-weight: 700; color: #1E3A8A; margin-bottom: 6px;">📸 임상 사진 첨부 (선택사항)</label>
+                    <input type="file" id="reg-photo" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #38BDF8; border-radius: 6px; font-size: 13px; background: #f8fafc; box-sizing: border-box;">
+                </div>
+                
+                <button onclick="addStudent()" style="background: #1E3A8A; color: white; border: none; padding: 14px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; box-shadow: 0 4px 8px rgba(30,58,138,0.25); transition: 0.2s;">💾 진료 차트 클라우드 등록</button>
+            </div>
+        </div>
+
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(30,58,138,0.05); border: 1px solid #bae6fd;">
+            <h3 style="margin-top: 0; color: #1E3A8A; margin-bottom: 18px; font-size: 18px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #E0F2FE; padding-bottom: 10px; font-weight: 800;">📋 실시간 환자별 의무기록 차트 리스트</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; min-width: 700px;">
+                    <thead>
+                        <tr style="background: #1E3A8A; color: #ffffff; border-bottom: 2px solid #0284C7;">
+                          <th style="padding: 14px 12px; font-weight: 700; width: 80px;">차트 시각</th>
+                          <th style="padding: 14px 12px; font-weight: 700; width: 90px;">학번</th>
+                          <th style="padding: 14px 12px; font-weight: 700; width: 120px;">성명 / 기록</th>
+                          <th style="padding: 14px 12px; font-weight: 700;">주요 증상</th>
+                          <th style="padding: 14px 12px; font-weight: 700;">처방 및 조치 내용</th>
+                          <th style="padding: 14px 12px; font-weight: 700; text-align: center; width: 60px;">사진</th>
+                          <th style="padding: 14px 12px; font-weight: 700; text-align: center; width: 60px;">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-list">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div id="history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(30,58,138,0.4); z-index:20000; justify-content:center; align-items:center; padding:20px; box-sizing:border-box; backdrop-filter: blur(2px);">
+    <div style="background:#ffffff; width:100%; max-width:600px; max-height:85vh; border-radius:16px; padding:24px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.15); display:flex; flex-direction:column; box-sizing:border-box; border-top: 6px solid #FDE047;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #E0F2FE; padding-bottom:12px;">
+        <h3 id="history-title" style="margin:0; color:#1E3A8A; font-size:18px; font-weight:800;">📋 이전 진료 기록</h3>
+        <button onclick="closeHistoryModal()" style="background:none; border:none; font-size:26px; cursor:pointer; color:#94a3b8; line-height:1; font-weight:bold;">&times;</button>
+      </div>
+      <div id="history-content" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px; padding-right:4px;">
+        </div>
+    </div>
+  </div>
+
+  <div id="image-modal" onclick="closeImageModal()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:20001; justify-content:center; align-items:center;">
+    <img id="modal-img" src="" style="max-width:90%; max-height:90%; border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.5); border: 2px solid #38BDF8;">
+  </div>
+
+  <div id="toast"></div>
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, OAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    // 장원이의 핵심 보안 키 정보 완벽 유지
+    const firebaseConfig = {
+      apiKey: "AIzaSyBYJYh5NteOmg2SfuydeFAcYy0lLjDn8iI",
+      authDomain: "semr-d0dcb.firebaseapp.com",
+      projectId: "semr-d0dcb",
+      storageBucket: "semr-d0dcb.firebasestorage.app",
+      messagingSenderId: "294566859435",
+      appId: "1:294566859435:web:bb16da8b51bec94b335dee",
+      measurementId: "G-SJY365QJ02"
+    };
+
+    // 초기화
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 글로벌 캐시 데이터 (이력 실시간 서칭용)
+    let globalCachedData = [];
+
+    // DOM 연동 선언부
+    const loginOverlay = document.getElementById('login-overlay');
+    const loginSection = document.getElementById('login-section');
+    const signupSection = document.getElementById('signup-section');
+    
+    const loginEmail = document.getElementById('login-email');
+    const loginPwd = document.getElementById('login-pwd');
+    const signupEmail = document.getElementById('signup-email');
+    const signupPwd = document.getElementById('signup-pwd');
+    
+    const errorMsg = document.getElementById('login-error');
+    const mainSystem = document.getElementById('main-system');
+    const userDisplay = document.getElementById('user-display-name');
+
+    // 화면 섹션 이동 토글 기능
+    document.getElementById('link-goto-signup').addEventListener('click', (e) => {
+      e.preventDefault();
+      loginSection.style.display = 'none';
+      signupSection.style.display = 'block';
+      errorMsg.style.display = 'none';
+    });
+
+    document.getElementById('link-goto-login').addEventListener('click', (e) => {
+      e.preventDefault();
+      signupSection.style.display = 'none';
+      loginSection.style.display = 'block';
+      errorMsg.style.display = 'none';
+    });
+
+    // 일반 회원가입 로직
+    document.getElementById('btn-signup').addEventListener('click', () => {
+      const email = signupEmail.value.trim();
+      const password = signupPwd.value.trim();
+      errorMsg.style.display = 'none';
+
+      if(!email || !password) {
+        alert('이메일과 비밀번호를 명확히 입력해주세요!');
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          alert('🎉 SEMR 의료진 계정이 등록되었습니다! 즉시 메인 화면으로 이동합니다.');
+          signupSection.style.display = 'none';
+          loginSection.style.display = 'block';
+        })
+        .catch((error) => {
+          errorMsg.textContent = `⚠️ 가입 오류: ${error.message}`;
+          errorMsg.style.display = 'block';
+        });
+    });
+
+    // 로그인 실행
+    document.getElementById('btn-login').addEventListener('click', () => {
+      const email = loginEmail.value.trim();
+      const password = loginPwd.value.trim();
+      errorMsg.style.display = 'none';
+
+      signInWithEmailAndPassword(auth, email, password)
+        .catch((error) => {
+          errorMsg.textContent = "⚠️ 로그인 실패: 접속 정보를 다시 계측해 주십시오.";
+          errorMsg.style.display = 'block';
+        });
+    });
+
+    // 애플 계정 OAuth 연동
+    document.getElementById('btn-apple-login').addEventListener('click', () => {
+      const provider = new OAuthProvider('apple.com');
+      errorMsg.style.display = 'none';
+      
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          showToast('🍏 애플 보안 계정으로 인증 완료.');
+        })
+        .catch((error) => {
+          errorMsg.textContent = "⚠️ 애플 로그인 연동 오류: 파이어베이스 콘솔 설정이 필요합니다.";
+          errorMsg.style.display = 'block';
+        });
+    });
+
+    // 인증 모니터링 루프
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginOverlay.style.display = 'none';
+        mainSystem.style.display = 'block';
+        userDisplay.textContent = `🩺 ${user.email.split('@')[0]} 교사 접속중`;
+        showToast('🔑 SEMR 클라우드 실시간 암호화 연동 성공.');
+        syncDataWithFirestore();
+      } else {
+        loginOverlay.style.display = 'flex';
+        mainSystem.style.display = 'none';
+        loginEmail.value = '';
+        loginPwd.value = '';
+      }
+    });
+
+    // 로그아웃
+    window.handleLogout = function() {
+      signOut(auth).then(() => {
+        showToast('🔒 시스템 안전 잠금 조치 및 로그아웃 완료.');
+      });
+    };
+
+    // 로켓 처방 주입
+    window.applyRocketPreset = function(symptoms, treatment) {
+      document.getElementById('reg-symptoms').value = symptoms;
+      document.getElementById('reg-treatment').value = treatment;
+      showToast('⚡ 로켓 처방 데이터 로드 완료.');
+    };
+
+    // 이미지 리사이징 압축 변환 모듈
+    function encodeImageFile(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = function() {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const max_size = 400; 
+            let width = img.width;
+            let height = img.height;
+            if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } }
+            else { if (height > max_size) { width *= max_size / height; height = max_size; } }
+            canvas.width = width; canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+          }
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // 신규 차트 등록 프로세스
+    window.addStudent = async function() {
+      const studentId = document.getElementById('reg-student-id').value.trim();
+      const name = document.getElementById('reg-name').value.trim();
+      const symptoms = document.getElementById('reg-symptoms').value.trim();
+      const treatment = document.getElementById('reg-treatment').value.trim();
+      const photoFile = document.getElementById('reg-photo').files[0];
+      
+      if(!name || !symptoms || !treatment) {
+          alert('⚠️ 필수 입력 필드(* 성명, 주요증상, 처방내역)를 누락 없이 채워주세요.');
+          return;
+      }
+      
+      let photoBase64 = "";
+      if(photoFile) {
+        photoBase64 = await encodeImageFile(photoFile);
+      }
+      
+      try {
+          await addDoc(collection(db, "students"), {
+              studentId: studentId, 
+              name: name,
+              symptoms: symptoms,
+              treatment: treatment,
+              photo: photoBase64,
+              timestamp: Date.now()
+          });
+          
+          // 입력 폼 초기화
+          document.getElementById('reg-student-id').value = '';
+          document.getElementById('reg-name').value = '';
+          document.getElementById('reg-symptoms').value = '';
+          document.getElementById('reg-treatment').value = '';
+          document.getElementById('reg-photo').value = '';
+          
+          alert('💾 진료 내역이 SEMR 클라우드 저장소에 완벽히 저장되었습니다.');
+      } catch (error) {
+          console.error("저장 실패:", error);
+          alert('원격 서버 전송 에러 발생.');
+      }
+    };
+
+    // 데이터베이스 상시 연동 리스너
+    function syncDataWithFirestore() {
+      const q = query(collection(db, "students"));
+      onSnapshot(q, (snapshot) => {
+        const studentsData = [];
+        snapshot.forEach((doc) => {
+          studentsData.push({ dbId: doc.id, ...doc.data() });
+        });
+        globalCachedData = studentsData; 
+        window.renderStudents(studentsData);
+      });
+    }
+
+    // SEMR 전용 메디컬 차트 렌더러
+    window.renderStudents = function(studentsData) {
+        const listBody = document.getElementById('student-list');
+        if (!listBody) return;
+        
+        listBody.innerHTML = '';
+        studentsData.sort((a, b) => b.timestamp - a.timestamp);
+        
+        if(studentsData.length === 0) {
+            listBody.innerHTML = `<tr><td colspan="7" style="padding: 40px; text-align: center; color: #94a3b8; font-weight:600;">현재 대시보드에 활성화된 세션 차트가 비어있습니다.</td></tr>`;
+            return;
+        }
+        
+        studentsData.forEach(student => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #e2e8f0';
+            tr.style.background = '#ffffff';
+            
+            const date = student.timestamp ? new Date(student.timestamp) : new Date();
+            const timeStr = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+            
+            let photoHtml = `<span style="color:#94a3b8;">-</span>`;
+            if(student.photo) {
+              photoHtml = `<img src="${student.photo}" onclick="openImageModal('${student.photo}')" style="width:36px; height:36px; object-fit:cover; border-radius:4px; cursor:pointer; border:1px solid #38bdf8; display:block; margin:0 auto;">`;
+            }
+
+            const displayId = student.studentId ? student.studentId : `<span style="color:#cbd5e0;">-</span>`;
+            
+            tr.innerHTML = `
+                <td style="padding: 14px 12px; color: #64748b; font-weight:700; font-family:monospace;">${timeStr}</td>
+                <td style="padding: 14px 12px; color: #1E3A8A; font-weight:800;">${displayId}</td>
+                <td style="padding: 14px 12px; font-weight: 700; color: #1e293b;">
+                  <span>${student.name}</span>
+                  <button onclick="openHistoryModal('${student.name}')" style="margin-left:6px; background:#FDE047; color:#1E3A8A; border:1px solid #EAB308; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:800; transition:0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">이력</button>
+                </td>
+                <td style="padding: 14px 12px; color: #EF4444; font-weight: 700;"><span style="border-left: 3px solid #EF4444; padding-left: 6px;">${student.symptoms}</span></td>
+                <td style="padding: 14px 12px; color: #0284C7; font-weight: 600;">${student.treatment}</td>
+                <td style="padding: 14px 12px; text-align: center;">${photoHtml}</td>
+                <td style="padding: 14px 12px; text-align: center;">
+                    <button onclick="deleteStudent('${student.dbId}')" style="background: #FFF5F5; color: #EF4444; border: 1px solid #FEE2E2; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 700; transition:0.2s;">폐기</button>
+                </td>
+            `;
+            listBody.appendChild(tr);
+        });
+    };
+
+    // 특정 학생 과거 이력 추적 모달 실행 (노란색 상단 띠 디자인 매칭)
+    window.openHistoryModal = function(studentName) {
+      const historyList = globalCachedData
+        .filter(item => item.name === studentName)
+        .sort((a, b) => b.timestamp - a.timestamp);
+
+      const titleEl = document.getElementById('history-title');
+      const contentEl = document.getElementById('history-content');
+
+      titleEl.innerHTML = `🏥 <strong>[${studentName}]</strong> 환자 누적 의무기록 히스토리 <span style="font-size:12px; color:#64748b; font-weight:normal;">(총 ${historyList.length}건)</span>`;
+      contentEl.innerHTML = '';
+
+      if(historyList.length === 0) {
+        contentEl.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:20px 0;">이전 내원 이력이 조회되지 않습니다.</p>`;
+      } else {
+        historyList.forEach(history => {
+          const d = history.timestamp ? new Date(history.timestamp) : new Date();
+          const fullDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+          
+          const box = document.createElement('div');
+          box.style.cssText = "background:#f8fafc; padding:14px; border-radius:10px; border:1px solid #bae6fd; font-size:13px; line-height:1.5; box-shadow: 0 2px 4px rgba(0,0,0,0.01);";
+          
+          box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:11px; color:#64748b; font-weight:bold;">
+              <span>🕒 진료시점: ${fullDateStr}</span>
+              <span style="background:#E0F2FE; color:#1E3A8A; padding:2px 6px; border-radius:4px;">학번: ${history.studentId || '미기입'}</span>
+            </div>
+            <div style="margin-bottom:4px;"><strong style="color:#EF4444;">[증상]</strong> ${history.symptoms}</div>
+            <div><strong style="color:#0284C7;">[처방]</strong> ${history.treatment}</div>
+          `;
+          contentEl.appendChild(box);
+        });
+      }
+
+      document.getElementById('history-modal').style.display = 'flex';
+    };
+
+    window.closeHistoryModal = function() {
+      document.getElementById('history-modal').style.display = 'none';
+    };
+
+    // 영구 파쇄 소멸 처리
+    window.deleteStudent = async function(id) {
+        if(confirm('🚨 영구 폐기된 의무기록 차트는 절대 복구할 수 없습니다. 정말 소멸 처리합니까?')) {
+            try {
+                await deleteDoc(doc(db, "students", id));
+                showToast('🗑️ 지정된 세션 진료차트 영구 파쇄 처리 완료.');
+            } catch (error) {
+                alert('차트 제거 중 실패.');
+            }
+        }
+    };
+
+    // 이미지 확대 모달 제어
+    window.openImageModal = function(src) {
+      document.getElementById('modal-img').src = src;
+      document.getElementById('image-modal').style.display = 'flex';
+    };
+    window.closeImageModal = function() {
+      document.getElementById('image-modal').style.display = 'none';
+    };
+
+    // 토스트 제어
+    window.showToast = function(msg){
+      const t = document.getElementById('toast');
+      if(t) {
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+      }
+    };
+  </script>
+</body>
+</html>
