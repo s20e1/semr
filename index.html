@@ -45,11 +45,68 @@
     
     <!-- ⬇️여기에 네가 원래 만들었던 예쁜 보건실 HTML 코드(디자인 태그들)를 통째로 붙여넣어줘! -->
     
-    <div style="padding: 40px; text-align: center;">
-      <h1>🏫 보건실 EMR 시스템이 성공적으로 연결되었습니다!</h1>
-      <p>여기에 원래 가지고 있던 메인 UI 디자인 코드들을 쏙 집어넣으면 깔끔하게 합쳐져.</p>
-      <button onclick="handleLogout()" style="margin-top:20px; padding: 10px 20px; background: #e53e3e; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">로그아웃 하기</button>
+    <div style="background: #2b6cb0; color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <h2 style="margin: 0; font-size: 22px; display: flex; align-items: center; gap: 8px;">🏥 SchoolCare 보건실 EMR 시스템</h2>
+    <button onclick="handleLogout()" style="background: #e53e3e; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;">로그아웃</button>
+</div>
+
+<div style="padding: 24px; background: #f7fafc; display: flex; flex-direction: column; gap: 24px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
+    
+    <div style="background: white; padding: 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #edf2f7;">
+        <h3 style="margin-top: 0; color: #2d3748; margin-bottom: 18px; font-size: 18px; display: flex; align-items: center; gap: 6px;">➕ 신규 방문 학생 등록</h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 16px;">
+            <div>
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #4a5568; margin-bottom: 6px;">학년</label>
+                <input type="number" id="reg-grade" placeholder="예: 3" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #4a5568; margin-bottom: 6px;">반</label>
+                <input type="number" id="reg-class" placeholder="예: 2" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #4a5568; margin-bottom: 6px;">번호</label>
+                <input type="number" id="reg-number" placeholder="예: 15" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #4a5568; margin-bottom: 6px;">이름</label>
+                <input type="text" id="reg-name" placeholder="홍길동" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px;">
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #4a5568; margin-bottom: 6px;">주요 증상</label>
+                <input type="text" id="reg-symptoms" placeholder="예: 복통 및 두통, 가벼운 찰과상" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #4a5568; margin-bottom: 6px;">처치 내용</label>
+                <input type="text" id="reg-treatment" placeholder="예: 소화제 복용 후 20분 침상 안정" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px;">
+            </div>
+        </div>
+        
+        <button onclick="addStudent()" style="background: #3182ce; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s;">📋 보건실 방문 기록 등록하기</button>
     </div>
+
+    <div style="background: white; padding: 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #edf2f7; overflow-x: auto;">
+        <h3 style="margin-top: 0; color: #2d3748; margin-bottom: 18px; font-size: 18px; display: flex; align-items: center; gap: 6px;">📋 오늘 보건실 방문 명단 (실시간 연동)</h3>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; min-width: 600px;">
+            <thead>
+                <tr style="background: #ebf8ff; color: #2b6cb0; border-bottom: 2px solid #bee3f8;">
+                    <th style="padding: 14px 12px; font-weight: 700;">방문 시간</th>
+                    <th style="padding: 14px 12px; font-weight: 700;">반 정보</th>
+                    <th style="padding: 14px 12px; font-weight: 700;">이름</th>
+                    <th style="padding: 14px 12px; font-weight: 700;">증상</th>
+                    <th style="padding: 14px 12px; font-weight: 700;">처치 내용</th>
+                    <th style="padding: 14px 12px; font-weight: 700; text-align: center;">관리</th>
+                </tr>
+            </thead>
+            <tbody id="student-list">
+                </tbody>
+        </table>
+    </div>
+</div>
+
 
     <!-- ⬆️기존 HTML 코드 붙여넣기 끝! -->
 
