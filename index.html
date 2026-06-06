@@ -205,17 +205,17 @@
       }
     };
     // ==========================================
-// 🏥 보건실 시스템 핵심 기능 코드 (JavaScript)
-// ==========================================
+    // 🏥 보건실 시스템 핵심 기능 코드 (JavaScript)
+    // ==========================================
 
-// 1. [등록 버튼] 입력한 내용을 구글 클라우드(Firestore) 데이터베이스에 저장하기
-window.addStudent = async function() {
-    const grade = document.getElementById('reg-grade').value.trim();
-    const className = document.getElementById('reg-class').value.trim();
-    const number = document.getElementById('reg-number').value.trim();
-    const name = document.getElementById('reg-name').value.trim();
-    const symptoms = document.getElementById('reg-symptoms').value.trim();
-    const treatment = document.getElementById('reg-treatment').value.trim();
+    // 1. [등록 버튼] 입력한 내용을 구글 클라우드(Firestore) 데이터베이스에 저장하기
+    window.addStudent = async function() {
+       const grade = document.getElementById('reg-grade').value.trim();
+       const className = document.getElementById('reg-class').value.trim();
+       const number = document.getElementById('reg-number').value.trim();
+       const name = document.getElementById('reg-name').value.trim();
+       const symptoms = document.getElementById('reg-symptoms').value.trim();
+       const treatment = document.getElementById('reg-treatment').value.trim();
     
     // 빈칸이 하나라도 있으면 경고창 띄우고 중단
     if(!grade || !className || !number || !name || !symptoms || !treatment) {
